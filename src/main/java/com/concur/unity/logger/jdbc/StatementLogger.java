@@ -16,7 +16,7 @@
 package com.concur.unity.logger.jdbc;
 
 import com.concur.unity.ExceptionUtil;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -35,7 +35,7 @@ public final class StatementLogger extends BaseJdbcLogger implements InvocationH
 
   private Statement statement;
 
-  private StatementLogger(Statement stmt, Log statementLog, int queryStack) {
+  private StatementLogger(Statement stmt, Logger statementLog, int queryStack) {
     super(statementLog, queryStack);
     this.statement = stmt;
   }
@@ -73,7 +73,7 @@ public final class StatementLogger extends BaseJdbcLogger implements InvocationH
    * @param stmt - the statement
    * @return - the proxy
    */
-  public static Statement newInstance(Statement stmt, Log statementLog, int queryStack) {
+  public static Statement newInstance(Statement stmt, Logger statementLog, int queryStack) {
     InvocationHandler handler = new StatementLogger(stmt, statementLog, queryStack);
     ClassLoader cl = Statement.class.getClassLoader();
     return (Statement) Proxy.newProxyInstance(cl, new Class[]{Statement.class}, handler);

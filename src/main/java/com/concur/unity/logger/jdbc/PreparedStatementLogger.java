@@ -16,7 +16,7 @@
 package com.concur.unity.logger.jdbc;
 
 import com.concur.unity.ExceptionUtil;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -36,7 +36,7 @@ public final class PreparedStatementLogger extends BaseJdbcLogger implements Inv
 
   private PreparedStatement statement;
 
-  private PreparedStatementLogger(PreparedStatement stmt, Log statementLog, int queryStack) {
+  private PreparedStatementLogger(PreparedStatement stmt, Logger statementLog, int queryStack) {
     super(statementLog, queryStack);
     this.statement = stmt;
   }
@@ -89,7 +89,7 @@ public final class PreparedStatementLogger extends BaseJdbcLogger implements Inv
    * @param statementLog  - the sql statement
    * @return - the proxy
    */
-  public static PreparedStatement newInstance(PreparedStatement stmt, Log statementLog, int queryStack) {
+  public static PreparedStatement newInstance(PreparedStatement stmt, Logger statementLog, int queryStack) {
     InvocationHandler handler = new PreparedStatementLogger(stmt, statementLog, queryStack);
     ClassLoader cl = PreparedStatement.class.getClassLoader();
     return (PreparedStatement) Proxy.newProxyInstance(cl, new Class[]{PreparedStatement.class, CallableStatement.class}, handler);

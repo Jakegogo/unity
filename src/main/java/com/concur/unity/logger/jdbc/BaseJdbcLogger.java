@@ -16,7 +16,7 @@
 package com.concur.unity.logger.jdbc;
 
 import com.concur.unity.ArrayUtil;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 
 import java.sql.Array;
 import java.sql.SQLException;
@@ -38,13 +38,13 @@ public abstract class BaseJdbcLogger {
   private List<Object> columnNames = new ArrayList<Object>();
   private List<Object> columnValues = new ArrayList<Object>();
 
-  protected Log statementLog;
+  protected Logger statementLog;
   protected int queryStack;
 
   /**
    * Default constructor
    */
-  public BaseJdbcLogger(Log log, int queryStack) {
+  public BaseJdbcLogger(Logger log, int queryStack) {
     this.statementLog = log;
     if (queryStack == 0) {
       this.queryStack = 1;

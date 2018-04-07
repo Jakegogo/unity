@@ -17,7 +17,7 @@ package com.concur.unity.logger.jdbc;
 
 
 import com.concur.unity.ExceptionUtil;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -55,7 +55,7 @@ public final class ResultSetLogger extends BaseJdbcLogger implements InvocationH
     BLOB_TYPES.add(Types.VARBINARY);
   }
   
-  private ResultSetLogger(ResultSet rs, Log statementLog, int queryStack) {
+  private ResultSetLogger(ResultSet rs, Logger statementLog, int queryStack) {
     super(statementLog, queryStack);
     this.rs = rs;
   }
@@ -135,7 +135,7 @@ public final class ResultSetLogger extends BaseJdbcLogger implements InvocationH
    * @param rs - the ResultSet to proxy
    * @return - the ResultSet with logging
    */
-  public static ResultSet newInstance(ResultSet rs, Log statementLog, int queryStack) {
+  public static ResultSet newInstance(ResultSet rs, Logger statementLog, int queryStack) {
     InvocationHandler handler = new ResultSetLogger(rs, statementLog, queryStack);
     ClassLoader cl = ResultSet.class.getClassLoader();
     return (ResultSet) Proxy.newProxyInstance(cl, new Class[]{ResultSet.class}, handler);

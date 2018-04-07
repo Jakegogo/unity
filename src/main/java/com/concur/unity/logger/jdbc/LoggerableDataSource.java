@@ -1,13 +1,13 @@
 package com.concur.unity.logger.jdbc;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.logging.Logger;
 
 /**
  * 包含日志的动态数据源
@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  **/
 public class LoggerableDataSource implements DataSource {
 
-    protected final Log logger = LogFactory.getLog(this.getClass());
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private DataSource targetDataSource;
 
