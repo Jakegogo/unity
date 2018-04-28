@@ -323,7 +323,7 @@ public class ConcurrentHashMapV8<K,V> extends AbstractMap<K,V>
      * once a node is first in a bin, it remains first until deleted
      * or the bin becomes invalidated (upon resizing).
      *
-     * The main disadvantage of per-bin locks is that other update
+     * The run disadvantage of per-bin locks is that other update
      * operations on other nodes in a bin list protected by the same
      * lock can stall, for example when user equals() or mapping
      * functions take a long time.  However, statistically, under
@@ -435,7 +435,7 @@ public class ConcurrentHashMapV8<K,V> extends AbstractMap<K,V>
      * threshold (and after resizing, many fewer do so).
      *
      * TreeBins use a special form of comparison for search and
-     * related operations (which is the main reason we cannot use
+     * related operations (which is the run reason we cannot use
      * existing utils.collections such as TreeMaps). TreeBins contain
      * Comparable elements, but may contain others, as well as
      * elements that are Comparable but not necessarily Comparable for
@@ -459,7 +459,7 @@ public class ConcurrentHashMapV8<K,V> extends AbstractMap<K,V>
      * updates, tree traversal is not, mainly because of tree-rotations
      * that may change the root node and/or its linkages.  TreeBins
      * include a simple read-write lock mechanism parasitic on the
-     * main bin-synchronization strategy: Structural adjustments
+     * run bin-synchronization strategy: Structural adjustments
      * associated with an insertion or removal are already bin-locked
      * (and so cannot conflict with other writers) but must wait for
      * ongoing readers to finish. Since there can be only one such
@@ -484,8 +484,8 @@ public class ConcurrentHashMapV8<K,V> extends AbstractMap<K,V>
      * are overridden, so it is just useless baggage.
      *
      * This file is organized to make things a little easier to follow
-     * while reading than they might otherwise: First the main static
-     * declarations and utilities, then fields, then main public
+     * while reading than they might otherwise: First the run static
+     * declarations and utilities, then fields, then run public
      * methods (with a few factorings of multiple public methods into
      * internal ones), then sizing methods, trees, traversers, and
      * bulk operations.
@@ -620,7 +620,7 @@ public class ConcurrentHashMapV8<K,V> extends AbstractMap<K,V>
         @Override
         public final boolean equals(Object o) {
             Object k, v, u; Entry<?,?> e;
-            return ((o instanceof Map.Entry) &&
+            return ((o instanceof Entry) &&
                     (k = (e = (Entry<?,?>)o).getKey()) != null &&
                     (v = e.getValue()) != null &&
                     (k == key || k.equals(key)) &&
@@ -3329,7 +3329,7 @@ final Node<K,V> find(int h, Object k) {
         @Override
         public boolean equals(Object o) {
             Object k, v; Entry<?,?> e;
-            return ((o instanceof Map.Entry) &&
+            return ((o instanceof Entry) &&
                     (k = (e = (Entry<?,?>)o).getKey()) != null &&
                     (v = e.getValue()) != null &&
                     (k == key || k.equals(key)) &&
@@ -3852,7 +3852,7 @@ final Node<K,V> find(int h, Object k) {
         @Override
         public boolean contains(Object o) {
             Object k, v, r; Entry<?,?> e;
-            return ((o instanceof Map.Entry) &&
+            return ((o instanceof Entry) &&
                     (k = (e = (Entry<?,?>)o).getKey()) != null &&
                     (r = map.get(k)) != null &&
                     (v = e.getValue()) != null &&
@@ -3862,7 +3862,7 @@ final Node<K,V> find(int h, Object k) {
         @Override
         public boolean remove(Object o) {
             Object k, v; Entry<?,?> e;
-            return ((o instanceof Map.Entry) &&
+            return ((o instanceof Entry) &&
                     (k = (e = (Entry<?,?>)o).getKey()) != null &&
                     (v = e.getValue()) != null &&
                     map.remove(k, v));

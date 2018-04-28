@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.concur.unity.enhance.asm.util;
+package com.concur.unity.asm.util;
 
 import org.objectweb.asm.Type;
 
@@ -32,7 +32,7 @@ import java.util.*;
  */
 public class ReflectUtils {
     private ReflectUtils() { }
-    
+
     private static final Map primitives = new HashMap(8);
     private static final Map transforms = new HashMap(8);
     private static final ClassLoader defaultLoader = ReflectUtils.class.getClassLoader();

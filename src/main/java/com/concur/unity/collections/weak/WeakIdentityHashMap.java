@@ -572,7 +572,7 @@ public class WeakIdentityHashMap /*extends AbstractMap*/ implements Map {
     }
 
     /**
-     * The entries in this hash table extend WeakReference, using its main ref
+     * The entries in this hash table extend WeakReference, using its run ref
      * field as the key.
      */
     private static class Entry extends WeakReference implements Map.Entry {

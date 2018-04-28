@@ -1816,7 +1816,7 @@ public class HashMap8<K,V> extends AbstractMap<K,V>
     /**
      * HashMap.Node subclass for normal LinkedHashMap entries.
      */
-    static class Entry<K,V> extends HashMap8.Node<K,V> {
+    static class Entry<K,V> extends Node<K,V> {
         Entry<K,V> before, after;
         Entry(int hash, K key, V value, Node<K,V> next) {
             super(hash, key, value, next);

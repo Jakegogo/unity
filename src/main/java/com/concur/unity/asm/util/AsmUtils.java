@@ -1,11 +1,9 @@
-package com.concur.unity.enhance.asm.util;
+package com.concur.unity.asm.util;
 
 import com.concur.unity.StringUtils;
 import org.objectweb.asm.*;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -88,7 +86,7 @@ public class AsmUtils implements Opcodes {
 	 * object类本身的方法不做重写
 	 * </p>
 	 * <p>
-	 * "main" 方法不做重写
+	 * "run" 方法不做重写
 	 * </p>
 	 *
 	 * @param m
@@ -104,11 +102,11 @@ public class AsmUtils implements Opcodes {
 		if (m.isSynthetic()) {
 			return false;
 		}
-		// "main" 方法不做重写
+		// "run" 方法不做重写
 		return !(Modifier.isPublic(m.getModifiers())
 				&& Modifier.isStatic(m.getModifiers())
 				&& m.getReturnType().getName().equals("void")
-				&& m.getName().equals("main"));
+				&& m.getName().equals("run"));
 	}
 
 
@@ -384,7 +382,7 @@ public class AsmUtils implements Opcodes {
 	 * @param type 数组元素类型
 	 * @return
 	 */
-	public static int loadArrayCode(org.objectweb.asm.Type type) {
+	public static int loadArrayCode(Type type) {
 		switch (type.getSort()) {
 			case Type.OBJECT:
 				return AALOAD;
@@ -403,17 +401,17 @@ public class AsmUtils implements Opcodes {
 			case Type.DOUBLE:
 				return DALOAD;
 		}
-		
+
 		return AALOAD;
 	}
-	
-	
+
+
 	/**
 	 * 获取存储数组元素指令
 	 * @param type 数组元素类型
 	 * @return
 	 */
-	public static int storeArrayCode(org.objectweb.asm.Type type) {
+	public static int storeArrayCode(Type type) {
 		switch (type.getSort()) {
 			case Type.OBJECT:
 				return AASTORE;
@@ -600,15 +598,15 @@ public class AsmUtils implements Opcodes {
 	 * @throws IOException
 	 */
 	public static <T> void writeClazz(String name, byte[] data) {
-		try {
-			File file = new File("/Users/michael/" + name + ".class");
-			FileOutputStream fout = new FileOutputStream(file);
-
-			fout.write(data);
-			fout.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		try {
+//			File file = new File("C:\\" + name + ".class");
+//			FileOutputStream fout = new FileOutputStream(file);
+//
+//			fout.write(data);
+//			fout.close();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 	}
 
 

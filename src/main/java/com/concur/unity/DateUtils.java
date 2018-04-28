@@ -5,6 +5,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static java.util.Calendar.*;
+
 /**
  * 日期工具类 <br/>
  * 修复多线程共用DateFormat的产生多线程问题,单线程只创建一个DateFormat
@@ -12,11 +14,17 @@ import java.util.*;
  */
 public class DateUtils {
 
+	/**
+	 * 默认解析/格式化的格式-精确到秒
+	 */
 	public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
+	/**
+	 * 默认解析/格式化的格式-精确到天
+	 */
 	public static final String DATE_FORMAT_YYYY_MM_DD = "yyyy-MM-dd";
 	
-	
+	// 每个线程独立一个日期转换器
 	private static ThreadLocal<Map<String, DateFormat>> threadLocal = new ThreadLocal<Map<String, DateFormat>>() {
 		protected synchronized Map<String, DateFormat> initialValue() {
 			Map<String, DateFormat> formatorMap = new HashMap<String, DateFormat>(
@@ -57,7 +65,7 @@ public class DateUtils {
 	/**
 	 * 解析字符串日期 默认格式yyyy-MM-dd HH:mm:ss
 	 * 
-	 * @param textDate
+	 * @param textDate 目标日期字符串
 	 * @return
 	 * @throws ParseException
 	 */
@@ -68,7 +76,7 @@ public class DateUtils {
 	/**
 	 * 解析字符串日期
 	 * 
-	 * @param textDate
+	 * @param textDate 目标日期字符串
 	 * @param format
 	 * @return
 	 * @throws ParseException
@@ -81,7 +89,7 @@ public class DateUtils {
 	/**
 	 * 格式化日志 默认格式yyyy-MM-dd HH:mm:ss
 	 * 
-	 * @param date
+	 * @param date 目标Date
 	 * @return
 	 */
 	public static String format(Date date) {
@@ -91,7 +99,7 @@ public class DateUtils {
 	/**
 	 * 格式化日期
 	 * 
-	 * @param date
+	 * @param date 目标Date
 	 * @param format
 	 *            如yyyy-MM-dd
 	 * @return
@@ -103,7 +111,7 @@ public class DateUtils {
 	/**
 	 * 获取某天的开始
 	 * 
-	 * @param date
+	 * @param date 目标Date
 	 * @return
 	 */
 	public static Date getStartDatePointer(Date date) {
@@ -120,7 +128,7 @@ public class DateUtils {
 	/**
 	 * 获取某天的最后时间点
 	 * 
-	 * @param date
+	 * @param date 目标Date
 	 * @return
 	 */
 	public static Date getEndDatePointer(Date date) {
@@ -192,7 +200,7 @@ public class DateUtils {
 	
 	/**
 	 * 获取date的昨天的开始时间点
-	 * @param date
+	 * @param date 目标Date
 	 * @return
 	 */
 	public static Date getYesterdayStartPointer(Date date) {
@@ -210,7 +218,7 @@ public class DateUtils {
 
 	/**
 	 * 获取昨天的结束时间点
-	 * 
+	 * @param date 目标Date
 	 * @return
 	 */
 	public static Date getYesterdayEndPointer(Date date) {
@@ -243,6 +251,7 @@ public class DateUtils {
 	
 	/**
 	 * 获取date的前天的开始时间点
+	 * @param date 目标Date
 	 * @return
 	 */
 	public static Date getAfterDayStartPointer(Date date){
@@ -380,6 +389,7 @@ public class DateUtils {
 	
 	/**
 	 * 获取date的上一个月的开始时间点
+	 * @param date 目标Date
 	 * @return
 	 */
 	public static Date getLastMonthStartPointer(Date date){
@@ -419,7 +429,7 @@ public class DateUtils {
 	/**
 	 * 获取日期所在月的开始时间点
 	 * 
-	 * @param date
+	 * @param date 目标Date
 	 * @return
 	 */
 	public static Date getMonthStartPointer(Date date) {
@@ -458,7 +468,7 @@ public class DateUtils {
 	/**
 	 * 获得日期所在月的结束时间点
 	 * 
-	 * @param date
+	 * @param date 目标Date
 	 * @return
 	 */
 	public static Date getMonthEndPointer(Date date) {
@@ -481,7 +491,7 @@ public class DateUtils {
 
 
 	/**
-	 * 获取星期一是第几天
+	 * 获取这周的星期一是第几天
 	 * @return
 	 */
 	private static int getMondayPlus() {
@@ -495,9 +505,9 @@ public class DateUtils {
 
 	/**
 	 * 计算两天之间相差几天
-	 * 
-	 * @param startTime
-	 * @param endTime
+	 * <li>格式yyyy-MM-dd</li>
+	 * @param startTime 开始日期字符串
+	 * @param endTime 结束日期字符串
 	 * @return 取得两个时间段的时间间隔 return t2 与t1的间隔天数 throws ParseException
 	 *         如果输入的日期格式不是0000-00-00 格式抛出异常
 	 */
@@ -560,7 +570,7 @@ public class DateUtils {
 	/***
 	 * 判断是否为闰年
 	 * 
-	 * @param yearStr
+	 * @param yearStr 年(yyyy)字符串
 	 * @return
 	 */
 	public static boolean isLoop(String yearStr) {
@@ -584,7 +594,8 @@ public class DateUtils {
 	/****
 	 * 计算出day的before天之前是哪一天
 	 * 
-	 * @param day
+	 * @param day 目标日期字符串
+	 * @param beforeDay 往前推的天数
 	 * @return
 	 */
 	public static String getDayBefore(String day, int beforeDay) {
@@ -649,7 +660,7 @@ public class DateUtils {
 	}
 
 	/**
-	 * 计算相隔几天
+	 * 计算相隔几天 无论先后顺序
 	 * 如果date1在date2之前则返回正数的days
 	 * 如果date1在date2之后则返回负数的days
 	 * @param date1
@@ -688,7 +699,7 @@ public class DateUtils {
 	/**
 	 * 是否比当前时间至少小1天
 	 * 
-	 * @param date
+	 * @param date 目标Date
 	 * @return 如果比当前时间至少小1天则返回true，否则返回flase
 	 */
 	public static boolean isBetweenAtLeastOneDay(Date date) {
@@ -730,7 +741,7 @@ public class DateUtils {
 	/**
 	 * 是否在今天之前
 	 * 
-	 * @param date
+	 * @param date 目标Date
 	 * @return
 	 */
 	public static boolean beforeToday(Date date) {
@@ -740,7 +751,7 @@ public class DateUtils {
 	/**
 	 * 是否在今天之前
 	 * 
-	 * @param date
+	 * @param date 目标Date
 	 * @return
 	 */
 	public static boolean beforeTodayS(String date) {
@@ -760,7 +771,7 @@ public class DateUtils {
 	 * 在昨天之前
 	 * 
 	 * @param dateStr
-	 *            yyyy-MM-dd
+	 *            yyyy-MM-dd 目标日期字符串
 	 * @return
 	 */
 	public static boolean beforeYesterday(String dateStr) {
@@ -781,7 +792,7 @@ public class DateUtils {
 	/**
 	 * 字符串到日期类型 默认格式yyyy-MM-dd HH:mm
 	 * 
-	 * @param dateString
+	 * @param dateString 目标日期字符串
 	 * @return
 	 */
 	public static Date string2Date(String dateString) {
@@ -797,8 +808,7 @@ public class DateUtils {
 
 	/**
 	 * 日期到字符串格式 默认格式yyyy-MM-dd HH:mm
-	 * 
-	 * @param date
+	 * @param date 目标Date
 	 * @return
 	 */
 	public static String date2String(Date date) {
@@ -808,9 +818,8 @@ public class DateUtils {
 
 	/**
 	 * 获取几天之后的日期
-	 * 
-	 * @param mils
-	 * @param day
+	 * @param mils 目标时间戳
+	 * @param day 添加的天数
 	 * @return
 	 */
 	public static long getDaysAfter(long mils, int day) {
@@ -823,7 +832,6 @@ public class DateUtils {
 
 	/**
 	 * 获取今天的日期字符串 格式yyyy-MM-dd
-	 * 
 	 * @return 格式yyyy-MM-dd
 	 */
 	public static String currentDateStr() {
@@ -832,9 +840,8 @@ public class DateUtils {
 
 	/**
 	 * 日期按天迭代
-	 * 
-	 * @param startDate
-	 * @param endDate
+	 * @param startDate 开始日期
+	 * @param endDate 结束日期
 	 * @return
 	 */
 	public static List<Date> dayIterator(Date startDate, Date endDate) {
@@ -853,9 +860,8 @@ public class DateUtils {
 	
 	/**
 	 * 日期按月迭代
-	 * 
-	 * @param startDate
-	 * @param endDate
+	 * @param startDate 开始日期
+	 * @param endDate 结束日期
 	 * @return
 	 */
 	public static List<Date> monthIterator(Date startDate, Date endDate) {
@@ -897,8 +903,8 @@ public class DateUtils {
 	/**
 	 * 日期 加(天)
 	 * 
-	 * @param date
-	 * @param amount
+	 * @param date 目标Date
+	 * @param amount 添加天数
 	 * @return
 	 */
 	public static Date addDays(Date date, int amount) {
@@ -908,9 +914,9 @@ public class DateUtils {
 	/**
 	 * 日期加减
 	 * 
-	 * @param date
-	 * @param calendarField
-	 * @param amount
+	 * @param date 目标Date
+	 * @param calendarField 添加单位, 如 Calendar.DAY_OF_MONTH
+	 * @param amount 添加数量
 	 * @return
 	 */
 	public static Date add(Date date, int calendarField, int amount) {
@@ -924,9 +930,32 @@ public class DateUtils {
 	}
 
 	/**
+	 * Date加减
+	 * @param theDate 目标Date
+	 * @param addHours 添加小时
+	 * @param addMinutes 添加分钟
+	 * @param addSecond 添加秒
+     * @return
+     */
+	public static Date add(Date theDate, int addHours, int addMinutes, int addSecond) {
+		if (theDate == null) {
+			return null;
+		}
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(theDate);
+
+		cal.add(HOUR_OF_DAY, addHours);
+		cal.add(MINUTE, addMinutes);
+		cal.add(SECOND, addSecond);
+
+		return cal.getTime();
+	}
+
+	/**
 	 * 判断是否为今天
 	 * 
-	 * @param date
+	 * @param date 目标Date
 	 * @return
 	 */
 	public static boolean isToday(Date date) {
@@ -958,8 +987,8 @@ public class DateUtils {
 	
 	/**
 	 *当前时间date的  amount分钟后
-	 * @param date
-	 * @param amount
+	 * @param date  目标Date
+	 * @param amount amount分钟后
 	 * @return
 	 */
 	public static Date afterMunite(Date date,int amount){
@@ -971,7 +1000,6 @@ public class DateUtils {
 	
 	/**
 	 * 获取应用不可达时间
-	 * 
 	 * @return
 	 */
 	public static Date getUnreachableDate() {

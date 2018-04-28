@@ -47,9 +47,9 @@ public abstract class ReflectionUtility extends ReflectionUtils {
 	}
 
 	/**
-	 * 类似{@link org.springframework.util.ReflectionUtils#doWithFields(Class, FieldCallback, FieldFilter)}
+	 * 类似{@link ReflectionUtils#doWithFields(Class, FieldCallback, FieldFilter)}
 	 * 的方法，只是该方法不会递归检查父类上的域
-	 * @see org.springframework.util.ReflectionUtils#doWithFields(Class, FieldCallback, FieldFilter)
+	 * @see ReflectionUtils#doWithFields(Class, FieldCallback, FieldFilter)
 	 * @param clazz
 	 * @param fc
 	 * @param ff
@@ -180,4 +180,21 @@ public abstract class ReflectionUtility extends ReflectionUtils {
 			throw new IllegalStateException(message.getMessage(), e);
 		}
 	}
+
+	/**
+	 * 发射执行方法获取值
+	 * @param object 目标对象
+	 * @param methodName 方法名
+	 * @return
+	 */
+	public static Object readMethodValue(Object object, String methodName) {
+		try {
+			Method method = object.getClass().getDeclaredMethod(methodName);
+			method.setAccessible(true);
+			return method.invoke(object);
+		} catch (Exception e2) {
+		}
+		return null;
+	}
+
 }

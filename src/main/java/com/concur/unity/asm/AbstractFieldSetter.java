@@ -1,4 +1,4 @@
-package com.concur.unity.enhance.asm;
+package com.concur.unity.asm;
 
 /**
  * 抽象属性设值器

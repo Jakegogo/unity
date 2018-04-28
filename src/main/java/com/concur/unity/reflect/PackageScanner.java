@@ -15,6 +15,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.SystemPropertyUtils;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -84,10 +85,11 @@ public class PackageScanner {
 	/**
 	 * 扫描指定包中所有的类(包括子类)
 	 * @param classLoader 指定ClassLoader
+	 * @param annotation 目标注解
 	 * @param packageNames 包名支持权限定包名和ant风格匹配符(同spring)
 	 * @return 
 	 */
-	public static Collection<Class<?>> filterByAnnotation(ClassLoader classLoader, String... packageNames){
+	public static Collection<Class<?>> filterByAnnotation(ClassLoader classLoader, Class<? extends Annotation> annotation, String... packageNames){
 		Collection<Class<?>> clazzCollection = new HashSet<Class<?>>();
 
 		for (String packageName : packageNames) {
@@ -111,7 +113,9 @@ public class PackageScanner {
 						className = metaReader.getClassMetadata().getClassName();
 						
 						Class<?> clazz = classLoader.loadClass(className);
-						clazzCollection.add(clazz);
+						if (clazz.isAnnotationPresent(annotation)) {
+							clazzCollection.add(clazz);
+						}
 						
 					} catch (ClassNotFoundException e) {
 						logger.error("类 {} 不存在!", className);
@@ -137,7 +141,8 @@ public class PackageScanner {
 	 * @return
 	 */
 	private static String resolveBasePackage(String basePackage) {
-		String placeHolderReplace = SystemPropertyUtils.resolvePlaceholders(basePackage);//${classpath}替换掉placeholder 引用的变量值
+		//${classpath}替换掉placeholder 引用的变量值
+		String placeHolderReplace = SystemPropertyUtils.resolvePlaceholders(basePackage);
 		return ClassUtils.convertClassNameToResourcePath(placeHolderReplace);
 	}
 	

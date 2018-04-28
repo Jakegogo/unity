@@ -39,7 +39,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * subtasks may be hosted by a small number of actual threads in a
  * ForkJoinPool, at the price of some usage limitations.
  *
- * <p>A "main" {@code ForkJoinTask} begins execution when it is
+ * <p>A "run" {@code ForkJoinTask} begins execution when it is
  * explicitly submitted to a {@link ForkJoinPool}, or, if not already
  * engaged in a ForkJoin computation, commenced in the {@link
  * ForkJoinPool#commonPool()} via {@link #fork}, {@link #invoke}, or
@@ -55,7 +55,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p>A {@code ForkJoinTask} is a lightweight form of {@link Future}.
  * The efficiency of {@code ForkJoinTask}s stems from a set of
  * restrictions (that are only partially statically enforceable)
- * reflecting their main use as computational tasks calculating pure
+ * reflecting their run use as computational tasks calculating pure
  * functions or operating on purely isolated objects.  The primary
  * coordination mechanisms are {@link #fork}, that arranges
  * asynchronous execution, and {@link #join}, that doesn't proceed

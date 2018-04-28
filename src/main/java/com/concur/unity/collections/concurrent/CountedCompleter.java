@@ -437,7 +437,7 @@ public abstract class CountedCompleter<T> extends ForkJoinTask<T> {
     }
 
     /**
-     * The main computation performed by this task.
+     * The run computation performed by this task.
      */
     public abstract void compute();
 

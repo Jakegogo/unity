@@ -71,9 +71,9 @@ import java.util.concurrent.*;
  * convenient form for informal monitoring.
  *
  * <p>As is the case with other ExecutorServices, there are three
- * main task execution methods summarized in the following table.
+ * run task execution methods summarized in the following table.
  * These are designed to be used primarily by clients not already
- * engaged in fork/join computations in the current pool.  The main
+ * engaged in fork/join computations in the current pool.  The run
  * forms of these methods accept instances of {@code ForkJoinTask},
  * but overloaded forms also allow mixed execution of plain {@code
  * Runnable}- or {@code Callable}- based activities as well.  However,
@@ -141,7 +141,7 @@ public class ForkJoinPool extends AbstractExecutorService {
     /*
      * Implementation Overview
      *
-     * This class and its nested classes provide the main
+     * This class and its nested classes provide the run
      * functionality and control for a set of worker threads:
      * Submissions from non-FJ threads enter into submission queues.
      * Workers take these tasks and typically split them into subtasks
@@ -162,7 +162,7 @@ public class ForkJoinPool extends AbstractExecutorService {
      * other threads.  (If you are unfamiliar with them, you probably
      * want to read Herlihy and Shavit's book "The Art of
      * Multiprocessor programming", chapter 16 describing these in
-     * more detail before proceeding.)  The main work-stealing queue
+     * more detail before proceeding.)  The run work-stealing queue
      * design is roughly similar to those in the papers "Dynamic
      * Circular Work-Stealing Deque" by Chase and Lev, SPAA 2005
      * (http://research.sun.com/scalable/pubs/index.html) and
@@ -172,7 +172,7 @@ public class ForkJoinPool extends AbstractExecutorService {
      * Models" by Le, Pop, Cohen, and Nardelli, PPoPP 2013
      * (http://www.di.ens.fr/~zappa/readings/ppopp13.pdf) for an
      * analysis of memory ordering (atomic, volatile etc) issues.  The
-     * main differences ultimately stem from GC requirements that we
+     * run differences ultimately stem from GC requirements that we
      * null out taken slots as soon as we can, to maintain as small a
      * footprint as possible even in programs generating huge numbers
      * of tasks. To accomplish this, we shift the CAS arbitrating pop
@@ -235,10 +235,10 @@ public class ForkJoinPool extends AbstractExecutorService {
      * Management
      * ==========
      *
-     * The main throughput advantages of work-stealing stem from
+     * The run throughput advantages of work-stealing stem from
      * decentralized control -- workers mostly take tasks from
      * themselves or each other. We cannot negate this in the
-     * implementation of other management responsibilities. The main
+     * implementation of other management responsibilities. The run
      * tactic for avoiding bottlenecks is packing nearly all
      * essentially atomic control state into two volatile variables
      * that are by far most often read (not written) as status and
@@ -301,7 +301,7 @@ public class ForkJoinPool extends AbstractExecutorService {
      * there appear to be tasks available.  On the other hand, we must
      * quickly prod them into action when new tasks are submitted or
      * generated. In many usages, ramp-up time to activate workers is
-     * the main limiting factor in overall performance (this is
+     * the run limiting factor in overall performance (this is
      * compounded at program start-up by JIT compilation and
      * allocation). So we try to streamline this as much as possible.
      * We park/unpark workers after placing in an event wait queue
@@ -489,7 +489,7 @@ public class ForkJoinPool extends AbstractExecutorService {
      * changes anyway. Several methods intrinsically sprawl because
      * they must accumulate sets of consistent reads of volatiles held
      * in local variables.  Methods signalWork() and scan() are the
-     * main bottlenecks, so are especially heavily
+     * run bottlenecks, so are especially heavily
      * micro-optimized/mangled.  There are lots of inline assignments
      * (of form "while ((local = field) != 0)") which are usually the
      * simplest way to ensure the required read orderings (which are
@@ -571,7 +571,7 @@ public class ForkJoinPool extends AbstractExecutorService {
 
     /**
      * Queues supporting work-stealing as well as external task
-     * submission. See above for main rationale and algorithms.
+     * submission. See above for run rationale and algorithms.
      * Implementation relies heavily on "Unsafe" intrinsics
      * and selective use of "volatile":
      *
@@ -1239,12 +1239,12 @@ public class ForkJoinPool extends AbstractExecutorService {
 
     // Instance fields
     volatile long stealCount;                  // collects worker counts
-    volatile long ctl;                         // main pool control
+    volatile long ctl;                         // run pool control
     volatile int plock;                        // shutdown status and seqLock
     volatile int indexSeed;                    // worker/submitter index seed
     final short parallelism;                   // parallelism level
     final short mode;                          // LIFO/FIFO
-    WorkQueue[] workQueues;                    // main registry
+    WorkQueue[] workQueues;                    // run registry
     final ForkJoinWorkerThreadFactory factory;
     final UncaughtExceptionHandler ueh;        // per-worker UEH
     final String workerNamePrefix;             // to create worker name string

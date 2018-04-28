@@ -32,7 +32,6 @@
 
 package com.concur.unity.collections.concurrent;
 
-
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -242,13 +241,13 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements 
             Node<K, V> node = head.getNext();
             if (head.casNext(node, node.getNext())) {
                 for (; ;) {
-                    if (node.casState(State.LINKED, State.UNLINKING)) {
+                    if (node.casState(Node.State.LINKED, Node.State.UNLINKING)) {
                         node.getNext().setPrev(head);
-                        node.setState(State.UNLINKED);
+                        node.setState(Node.State.UNLINKED);
                         return node;
                     }
-                    State state = node.getState();
-                    if (state == State.SENTINEL) {
+                    Node.State state = node.getState();
+                    if (state == Node.State.SENTINEL) {
                         return null;
                     }
                     continue; // retry CAS as the node is being linked by offer
@@ -263,7 +262,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements 
      * @param node An unlinked node to append to the tail of the list.
      */
     private void offer(Node<K, V> node) {
-        node.setState(State.LINKING);
+        node.setState(Node.State.LINKING);
         node.setNext(tail);
         for (; ;) {
             Node<K, V> prev = tail.getPrev();
@@ -272,7 +271,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements 
                 Node<K, V> next = tail;
                 for (; ;) {
                     if (next.casPrev(prev, node)) {
-                        node.setState(State.LINKED);
+                        node.setState(Node.State.LINKED);
                         return;
                     }
                     // walk up the list until a node can be linked
@@ -479,16 +478,11 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements 
         abstract <K, V> boolean onEvict(ConcurrentLinkedHashMap<K, V> map, Node<K, V> node);
     }
 
-    public static enum State {
-        SENTINEL, UNLINKED, UNLINKING, LINKING, LINKED
-    }
-
     /**
      * A node on the double-linked list. This list cross-cuts the data store.
      */
+    @SuppressWarnings("unchecked")
     static final class Node<K, V> implements Serializable {
-
-
         private static final long serialVersionUID = 1461281468985304519L;
         private static final AtomicReferenceFieldUpdater<Node, Object> valueUpdater =
                 AtomicReferenceFieldUpdater.newUpdater(Node.class, Object.class, "value");
@@ -499,6 +493,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements 
         private static final AtomicReferenceFieldUpdater<Node, Node> nextUpdater =
                 AtomicReferenceFieldUpdater.newUpdater(Node.class, Node.class, "next");
 
+        public static enum State {
+            SENTINEL, UNLINKED, UNLINKING, LINKING, LINKED
+        }
 
         private final K key;
         private volatile V value;

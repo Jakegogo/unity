@@ -1,8 +1,9 @@
-package com.concur.unity.enhance.asm;
+package com.concur.unity.asm;
 
 
 /**
  * 值获取器接口
+ * <li>for jdk6/jdk7</li>
  * @author Jake
  * @date 2014年11月2日下午6:33:26
  */

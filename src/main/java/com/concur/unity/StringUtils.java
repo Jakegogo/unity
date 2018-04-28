@@ -6,7 +6,9 @@ package com.concur.unity;
  */
 public class StringUtils {
 
-	
+
+	public static final String EMPTY_STRING = "";
+
 	/**
 	 * 获取首字母小写的字符串
 	 * @param str 源字符串

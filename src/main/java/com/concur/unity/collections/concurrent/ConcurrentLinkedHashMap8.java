@@ -41,13 +41,16 @@
 package com.concur.unity.collections.concurrent;
 
 
+
 import com.concur.unity.collections.LinkedDeque;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import static com.concur.unity.collections.concurrent.ConcurrentLinkedHashMap8.QueuePolicy.*;
+import static com.concur.unity.collections.concurrent.ConcurrentLinkedHashMap8.QueuePolicy.PER_SEGMENT_Q;
+import static com.concur.unity.collections.concurrent.ConcurrentLinkedHashMap8.QueuePolicy.PER_SEGMENT_Q_OPTIMIZED_RMV;
+import static com.concur.unity.collections.concurrent.ConcurrentLinkedHashMap8.QueuePolicy.SINGLE_Q;
 
 // 从jdk8移植的ConcurrentLinkedHashMap
 
@@ -2097,7 +2100,7 @@ public class ConcurrentLinkedHashMap8<K, V> extends AbstractMap<K, V> implements
     private abstract class AbstractEntrySet extends AbstractSet<Entry<K, V>> {
         /** {@inheritDoc} */
         @Override public boolean contains(Object o) {
-            if (!(o instanceof Map.Entry))
+            if (!(o instanceof Entry))
                 return false;
 
             Entry<?,?> e = (Entry<?,?>)o;
@@ -2109,7 +2112,7 @@ public class ConcurrentLinkedHashMap8<K, V> extends AbstractMap<K, V> implements
 
         /** {@inheritDoc} */
         @Override public boolean remove(Object o) {
-            if (!(o instanceof Map.Entry))
+            if (!(o instanceof Entry))
                 return false;
 
             Entry<?,?> e = (Entry<?,?>)o;

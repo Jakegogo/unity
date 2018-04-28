@@ -3,18 +3,16 @@
  */
 package com.concur.unity.thread;
 
+import com.concur.unity.JsonUtils;
+import com.concur.unity.reflect.ReflectionUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.concur.unity.JsonUtils;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * 线程工具类
@@ -58,7 +56,7 @@ public abstract class ThreadUtils {
 					break;
 				} else {
 					if(threadPool instanceof ThreadPoolExecutor){
-						Queue<?> taskQueue = getTaskQueue((ThreadPoolExecutor)threadPool);
+						Queue<?> taskQueue = ((ThreadPoolExecutor)threadPool).getQueue();
 						if(taskQueue != null){
 							logger.error("当前正在关闭的线程池尚有 [{}] 个任务排队等待处理!", taskQueue.size());
 						}
@@ -74,59 +72,118 @@ public abstract class ThreadUtils {
 			}
 		}
 	}
+
+	/**
+	 * dump出线程池情况
+	 * @param poolname
+	 * @param threadPoolExecutor
+	 * @return
+	 */
+	public static String dumpThreadPool(String poolname , ThreadPoolExecutor threadPoolExecutor){
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("线程池名称" , poolname);
+
+		map.put("当前队列上排队的任务数量", "(无法获取)");
+		BlockingQueue<?> queue = threadPoolExecutor.getQueue();
+		if (queue != null) {
+			map.put("当前队列上排队的任务数量", queue.size());
+		}
+
+		map.put("当前池内总的线程数量", threadPoolExecutor.getPoolSize());
+		map.put("当前正在执行任务的线程数", threadPoolExecutor.getActiveCount());
+		map.put("历史执行过的任务数量", threadPoolExecutor.getCompletedTaskCount());
+		map.put("配置的核心大小", threadPoolExecutor.getCorePoolSize());
+		map.put("配置的最大线程数量", threadPoolExecutor.getMaximumPoolSize());
+		map.put("历史最大峰值线程数量", threadPoolExecutor.getLargestPoolSize());
+
+		return JsonUtils.object2PrettyJsonString(map);
+	}
 	
-	
-	
+	/**
+	 * dump出线程池情况
+	 * @param poolname
+	 * @param executor
+	 * @return
+	 */
+	public static String dumpThreadPool(String poolname , Executor executor){
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("线程池名称" , poolname);
+
+		map.put("当前队列上排队的任务数量", "(无法获取)");
+		BlockingQueue<?> queue = getTaskQueue(executor);
+		if (queue != null) {
+			map.put("当前队列上排队的任务数量", queue.size());
+		}
+
+		map.put("当前池内总的线程数量", ReflectionUtility.readMethodValue(executor, "getPoolSize"));
+		map.put("当前正在执行任务的线程数", ReflectionUtility.readMethodValue(executor, "getActiveCount"));
+		map.put("历史执行过的任务数量", ReflectionUtility.readMethodValue(executor, "getCompletedTaskCount"));
+		map.put("配置的核心大小", ReflectionUtility.readMethodValue(executor, "getCorePoolSize"));
+		map.put("配置的最大线程数量", ReflectionUtility.readMethodValue(executor, "getMaximumPoolSize"));
+		map.put("历史最大峰值线程数量", ReflectionUtility.readMethodValue(executor, "getLargestPoolSize"));
+
+		return JsonUtils.object2PrettyJsonString(map);
+
+
+	}
+
 	/**
 	 * 获取线程池的任务队列
 	 * @param threadPoolExecutor
 	 * @return
 	 */
-	private static BlockingQueue<?> getTaskQueue(ThreadPoolExecutor threadPoolExecutor){
+	private static BlockingQueue<?> getTaskQueue(Executor threadPoolExecutor) {
 		BlockingQueue<?> queue = null;
 		try {
-			queue = threadPoolExecutor.getQueue();
-		} catch (Exception e1) {
-			try {
-				Field field = ThreadPoolExecutor.class.getDeclaredField("workQueue");
-				field.setAccessible(true);
-				queue = (BlockingQueue<?>)field.get(threadPoolExecutor);
-			} catch (Exception e2) {
-				e2.printStackTrace();
-			}
+			Field field = ThreadPoolExecutor.class
+					.getDeclaredField("workQueue");
+			field.setAccessible(true);
+			queue = (BlockingQueue<?>) field.get(threadPoolExecutor);
+		} catch (Exception e2) {
 		}
 		return queue;
 	}
 
 	/**
-	 * dump出线程池情况
-	 * @param poolname
-	 * @param threadPool
-	 * @return
+	 * dump线程
+	 * @param thread
 	 */
-	public static String dumpThreadPool(String poolname , ExecutorService threadPool){
-
-		if(threadPool instanceof ThreadPoolExecutor){
-			ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor)threadPool;
-			Map<String, Object> map = new HashMap<String, Object>();
-			map.put("线程池名称" , poolname);
-
-			map.put("当前队列上排队的任务数量", "(无法获取)");
-			BlockingQueue<?> queue = getTaskQueue(threadPoolExecutor);
-			if(queue != null){
-				map.put("当前队列上排队的任务数量", queue.size());
-			}
-
-			map.put("当前池内总的线程数量", threadPoolExecutor.getPoolSize());
-			map.put("当前正在执行任务的线程数", threadPoolExecutor.getActiveCount());
-			map.put("历史执行过的任务数量", threadPoolExecutor.getCompletedTaskCount());
-			map.put("配置的核心大小", threadPoolExecutor.getCorePoolSize());
-			map.put("配置的最大线程数量", threadPoolExecutor.getMaximumPoolSize());
-			map.put("历史最大峰值线程数量", threadPoolExecutor.getLargestPoolSize());
-			return JsonUtils.object2JsonString(map);
+	public static String dumpThread(Thread thread) {
+		if (thread == null) {
+			return null;
+		}
+		StringBuilder output = new StringBuilder(1000);
+		// 忽略当前线程的堆栈信息
+		if (!thread.equals(Thread.currentThread())) {
+			output.append(thread).append("\n");
 		}
 
-		return "无法内省的线程池 [" + poolname + "]";
-
+		appendThreadStackTrace(output, thread.getStackTrace());
+		return output.toString();
 	}
+
+	/**
+	 * 输出线程堆栈到字符串
+	 * @param stack StackTraceElement[]
+	 * @return
+	 */
+	public static String printStackTrace(StackTraceElement[] stack) {
+		StringBuilder output = new StringBuilder(1000);
+		appendThreadStackTrace(output, stack);
+		return output.toString();
+	}
+
+	/**
+	 * 处理并输出堆栈信息.
+	 * @param output 输出内容
+	 * @param stack 线程堆栈
+	 */
+	private static void appendThreadStackTrace(StringBuilder output, StackTraceElement[] stack) {
+		for (StackTraceElement element : stack) {
+			output.append("\t").append(element).append("\n");
+		}
+	}
+
 }

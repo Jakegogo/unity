@@ -112,7 +112,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 
 	/**
 	 * Returns the segment that should be used for key with given hash
-	 *
+	 * 
 	 * @param hash
 	 *            the hash code for the key
 	 * @return the segment
@@ -178,9 +178,9 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 
 	/**
 	 * 基于原Segment修改，内部实现一个双向列表
-	 *
+	 * 
 	 * @author noah
-	 *
+	 * 
 	 * @param <K>
 	 * @param <V>
 	 */
@@ -194,17 +194,17 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 		 * created to replace them. This works well for hash tables since the
 		 * bin lists tend to be short. (The average length is less than two for
 		 * the default load factor threshold.)
-		 *
+		 * 
 		 * Read operations can thus proceed without locking, but rely on
 		 * selected uses of volatiles to ensure that completed write operations
 		 * performed by other threads are noticed. For most purposes, the
 		 * "count" field, tracking the number of elements, serves as that
 		 * volatile variable ensuring visibility. This is convenient because
 		 * this field needs to be read in many read operations anyway:
-		 *
+		 * 
 		 * - All (unsynchronized) read operations must first read the "count"
 		 * field, and should not look at table entries if it is 0.
-		 *
+		 * 
 		 * - All (synchronized) write operations should write to the "count"
 		 * field after structurally changing any bin. The operations must not
 		 * take any action that could even momentarily cause a concurrent read
@@ -213,7 +213,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 		 * that the table has grown but the threshold has not yet been updated,
 		 * so there are no atomicity requirements for this with respect to
 		 * reads.
-		 *
+		 * 
 		 * As a guide, all critical volatile reads and writes to the count field
 		 * are marked in code comments.
 		 */
@@ -250,7 +250,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 		 * The load factor for the hash table. Even though this value is same
 		 * for all segments, it is replicated to avoid needing links to outer
 		 * object.
-		 *
+		 * 
 		 * @serial
 		 */
 		final float loadFactor;
@@ -259,7 +259,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 		 * 头节点
 		 */
 		transient final HashEntry<K, V> header;
-
+		
 		/**
 		 * Segement最大容量
 		 */
@@ -338,7 +338,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 
 		/**
 		 * 将节点移动到头节点之前
-		 *
+		 * 
 		 * @param entry
 		 */
 		void moveNodeToHeader(HashEntry<K, V> entry) {
@@ -349,7 +349,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 
 		/**
 		 * 将第一个参数代表的节点插入到第二个参数代表的节点之前
-		 *
+		 * 
 		 * @param newEntry
 		 *            需要插入的节点
 		 * @param entry
@@ -364,7 +364,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 
 		/**
 		 * 从双向链中删除该Entry
-		 *
+		 * 
 		 * @param entry
 		 */
 		void removeNode(HashEntry<K, V> entry) {
@@ -630,7 +630,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 
 	/**
 	 * 使用指定参数，创建一个ConcurrentLRUHashMap
-	 *
+	 * 
 	 * @param segementCapacity
 	 *            Segement最大容量
 	 * @param loadFactor
@@ -663,7 +663,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 
 	/**
 	 * 使用指定参数，创建一个ConcurrentLRUHashMap
-	 *
+	 * 
 	 * @param segementCapacity
 	 *            Segement最大容量
 	 * @param loadFactor
@@ -675,7 +675,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 
 	/**
 	 * 使用指定参数，创建一个ConcurrentLRUHashMap
-	 *
+	 * 
 	 * @param segementCapacity
 	 *            Segement最大容量
 	 */
@@ -693,7 +693,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 
 	/**
 	 * Returns <tt>true</tt> if this map contains no key-value mappings.
-	 *
+	 * 
 	 * @return <tt>true</tt> if this map contains no key-value mappings
 	 */
 	public boolean isEmpty() {
@@ -730,7 +730,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 	 * Returns the number of key-value mappings in this map. If the map contains
 	 * more than <tt>Integer.MAX_VALUE</tt> elements, returns
 	 * <tt>Integer.MAX_VALUE</tt>.
-	 *
+	 * 
 	 * @return the number of key-value mappings in this map
 	 */
 	public int size() {
@@ -779,13 +779,13 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 	/**
 	 * Returns the value to which the specified key is mapped, or {@code null}
 	 * if this map contains no mapping for the key.
-	 *
+	 * 
 	 * <p>
 	 * More formally, if this map contains a mapping from a key {@code k} to a
 	 * value {@code v} such that {@code key.equals(k)}, then this method returns
 	 * {@code v}; otherwise it returns {@code null}. (There can be at most one
 	 * such mapping.)
-	 *
+	 * 
 	 * @throws NullPointerException
 	 *             if the specified key is null
 	 */
@@ -796,7 +796,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 
 	/**
 	 * Tests if the specified object is a key in this table.
-	 *
+	 * 
 	 * @param key
 	 *            possible key
 	 * @return <tt>true</tt> if and only if the specified object is a key in
@@ -814,7 +814,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 	 * Returns <tt>true</tt> if this map maps one or more keys to the specified
 	 * value. Note: This method requires a full internal traversal of the hash
 	 * table, and so is much slower than method <tt>containsKey</tt>.
-	 *
+	 * 
 	 * @param value
 	 *            value whose presence in this map is to be tested
 	 * @return <tt>true</tt> if this map maps one or more keys to the specified
@@ -875,7 +875,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 	 * {@link #containsValue}, and exists solely to ensure full compatibility
 	 * with class {@link java.util.Hashtable}, which supported this method prior
 	 * to introduction of the Java Collections framework.
-	 *
+	 * 
 	 * @param value
 	 *            a value to search for
 	 * @return <tt>true</tt> if and only if some key maps to the <tt>value</tt>
@@ -912,7 +912,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 	 * Copies all of the mappings from the specified map to this one. These
 	 * mappings replace any mappings that this map had for any of the keys
 	 * currently in the specified map.
-	 *
+	 * 
 	 * @param m
 	 *            mappings to be stored in this map
 	 */
@@ -924,7 +924,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 	/**
 	 * Removes the key (and its corresponding value) from this map. This method
 	 * does nothing if the key is not in the map.
-	 *
+	 * 
 	 * @param key
 	 *            the key that needs to be removed
 	 * @return the previous value associated with <tt>key</tt>, or <tt>null</tt>
@@ -939,7 +939,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @throws NullPointerException
 	 *             if the specified key is null
 	 */
@@ -950,7 +950,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @throws NullPointerException
 	 *             if any of the arguments are null
 	 */
@@ -963,7 +963,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @return the previous value associated with the specified key, or
 	 *         <tt>null</tt> if there was no mapping for the key
 	 * @throws NullPointerException
@@ -992,7 +992,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 	 * <tt>Set.remove</tt>, <tt>removeAll</tt>, <tt>retainAll</tt>, and
 	 * <tt>clear</tt> operations. It does not support the <tt>add</tt> or
 	 * <tt>addAll</tt> operations.
-	 *
+	 * 
 	 * <p>
 	 * The view's <tt>iterator</tt> is a "weakly consistent" iterator that will
 	 * never throw {@link ConcurrentModificationException}, and guarantees to
@@ -1013,7 +1013,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 	 * <tt>Iterator.remove</tt>, <tt>Collection.remove</tt>, <tt>removeAll</tt>,
 	 * <tt>retainAll</tt>, and <tt>clear</tt> operations. It does not support
 	 * the <tt>add</tt> or <tt>addAll</tt> operations.
-	 *
+	 * 
 	 * <p>
 	 * The view's <tt>iterator</tt> is a "weakly consistent" iterator that will
 	 * never throw {@link ConcurrentModificationException}, and guarantees to
@@ -1034,7 +1034,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 	 * <tt>Set.remove</tt>, <tt>removeAll</tt>, <tt>retainAll</tt>, and
 	 * <tt>clear</tt> operations. It does not support the <tt>add</tt> or
 	 * <tt>addAll</tt> operations.
-	 *
+	 * 
 	 * <p>
 	 * The view's <tt>iterator</tt> is a "weakly consistent" iterator that will
 	 * never throw {@link ConcurrentModificationException}, and guarantees to
@@ -1049,7 +1049,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 
 	/**
 	 * Returns an enumeration of the keys in this table.
-	 *
+	 * 
 	 * @return an enumeration of the keys in this table
 	 * @see #keySet()
 	 */
@@ -1059,7 +1059,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 
 	/**
 	 * Returns an enumeration of the values in this table.
-	 *
+	 * 
 	 * @return an enumeration of the values in this table
 	 * @see #values()
 	 */
@@ -1157,7 +1157,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 	 */
 	final class WriteThroughEntry extends SimpleEntry<K, V> {
 		/**
-		 *
+		 * 
 		 */
 		private static final long serialVersionUID = -2545938966452012894L;
 
@@ -1236,7 +1236,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 		}
 
 		public boolean contains(Object o) {
-			if (!(o instanceof Map.Entry))
+			if (!(o instanceof Entry))
 				return false;
 			Entry<?, ?> e = (Entry<?, ?>) o;
 			V v = ConcurrentLRUHashMap.this.get(e.getKey());
@@ -1244,7 +1244,7 @@ public class ConcurrentLRUHashMap<K, V> extends AbstractMap<K, V> implements
 		}
 
 		public boolean remove(Object o) {
-			if (!(o instanceof Map.Entry))
+			if (!(o instanceof Entry))
 				return false;
 			Entry<?, ?> e = (Entry<?, ?>) o;
 			return ConcurrentLRUHashMap.this.remove(e.getKey(), e.getValue());

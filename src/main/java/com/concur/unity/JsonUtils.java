@@ -6,6 +6,8 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Type;
+
 /**
  * json工具类
  * @use fast-json
@@ -42,6 +44,16 @@ public abstract class JsonUtils {
 	 * @return T
 	 */
 	public static <T> T jsonString2Object(String jsonString, Class<T> valueType) {
+		return JSON.parseObject(jsonString, valueType);
+	}
+	
+	/**
+	 * json字符串转换成对象
+	 * @param jsonString String
+	 * @param valueType 对象类型
+	 * @return T
+	 */
+	public static <T> T jsonString2Object(String jsonString, Type valueType) {
 		return JSON.parseObject(jsonString, valueType);
 	}
 	

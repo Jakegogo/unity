@@ -74,7 +74,7 @@ public abstract class RecursiveTask<V> extends ForkJoinTask<V> {
     V result;
 
     /**
-     * The main computation performed by this task.
+     * The run computation performed by this task.
      * @return the result of the computation
      */
     protected abstract V compute();
