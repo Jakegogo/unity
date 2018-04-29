@@ -29,7 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * 7.提供可检索和统计分析的日志
  * 8.可配置的,如配置property提供设置项
  */
-public abstract class Tracer {
+public abstract class BaseTracer {
 
     /** 一次取值时间间隔 */
     public static final int TRACE_INTERVAL = 2000;
@@ -67,18 +67,31 @@ public abstract class Tracer {
         }
     }
 
+    protected void initWorkThread() {
+        new Thread("测试排序线程") {
+            @Override
+            public void run() {
+                testSort();
+            }
+        }.start();
+    }
+
     // 一次取值时间间隔
     protected void sleep() throws InterruptedException {
-//      testSort();
-        Thread.sleep(TRACE_INTERVAL);
+      Thread.sleep(TRACE_INTERVAL);
     }
 
     // for test
     protected void testSort() {
         List<Integer> list = new ArrayList<Integer>();
-        for (int i = 0;i < 10000;i++) {
-            list.add(new Random().nextInt(10000));
-            Collections.sort(list);
+        try {
+            for (int i = 0; i < 1000000; i++) {
+                list.add(new Random().nextInt(10000));
+                Thread.sleep(1);
+                Collections.sort(list);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -134,8 +147,8 @@ public abstract class Tracer {
 
     // for test
     protected void testDeadLock1() {
-        final Object metex1 = new Object();
-        final Object metex2 = new Object();
+        final String metex1 = new String("object 1");
+        final String metex2 = new String("object 2");
 
         final Lock lock1 = LockUtils.getLock(metex1);
         final Lock lock2 = LockUtils.getLock(metex2);

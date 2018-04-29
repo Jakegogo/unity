@@ -9,7 +9,7 @@ import java.lang.management.ThreadMXBean;
  * 线程监控输出
  * Created by Administrator on 2016-5-16.
  */
-public class ThreadTracer extends Tracer {
+public class ThreadTracer extends BaseTracer {
 
     @Override
     public void run() throws IOException, InterruptedException {

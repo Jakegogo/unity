@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import javax.management.MBeanServerConnection;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import java.util.Map;
  * CPU监控输出
  * Created by Jake on 3/20 0020.
  */
-public class CpuTracer extends Tracer {
+public class CpuTracer extends BaseTracer {
     private static final Logger logger = LoggerFactory.getLogger("MONITOR-CPU");
 
     @Override
@@ -57,27 +58,30 @@ public class CpuTracer extends Tracer {
      */
     private void printSystemCpuUsage() throws IOException, InterruptedException {
 
-        MBeanServerConnection mbsc = ManagementFactory.getPlatformMBeanServer();
+        final RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
 
-        OperatingSystemMXBean osMBean = ManagementFactory.newPlatformMXBeanProxy(
+        final MBeanServerConnection mbsc = ManagementFactory.getPlatformMBeanServer();
+
+        final OperatingSystemMXBean osMBean = ManagementFactory.newPlatformMXBeanProxy(
                 mbsc, ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME, OperatingSystemMXBean.class);
 
-        long nanoBefore = System.nanoTime();
+        long nanoBefore = runtimeMXBean.getUptime();
         long cpuBefore = osMBean.getProcessCpuTime();
 
         // Call an expensive task, or sleep if you are monitoring a remote process
         sleep();
 
         long cpuAfter = osMBean.getProcessCpuTime();
-        long nanoAfter = System.nanoTime();
+        long nanoAfter = runtimeMXBean.getUptime();
 
         long percent;
         if (nanoAfter > nanoBefore)
-            percent = ((cpuAfter-cpuBefore)*100L)/
-                    (nanoAfter-nanoBefore);
+            percent = (cpuAfter-cpuBefore)/
+                    ((nanoAfter-nanoBefore) * 10000);
         else percent = 0;
 
-        logger.info("##### CPU usage statistics in " + TRACE_INTERVAL/1000 + " seconds #####");
+        logger.info("##### CPU usage statistics in " +
+                TRACE_INTERVAL/1000 + " seconds #####");
         logger.info("Cpu usage: "+percent+"%");
     }
 
@@ -89,8 +93,9 @@ public class CpuTracer extends Tracer {
      */
     public void printThreadCpuUsage(Thread previousPrinter) throws InterruptedException {
 
-        final ThreadMXBean bean = ManagementFactory.getThreadMXBean();
-        final long[] ids = bean.getAllThreadIds();
+        final RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
+        final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+        final long[] ids = threadMXBean.getAllThreadIds();
 
         /**
          * 每个线程的cpu时间记录
@@ -101,6 +106,8 @@ public class CpuTracer extends Tracer {
             public long startUserTime;
             public long endCpuTime;
             public long endUserTime;
+            public long nanoBefore;
+            public long nanoAfter;
             public ThreadInfo threadInfo;
 
             /**
@@ -113,18 +120,35 @@ public class CpuTracer extends Tracer {
                 logger.info("cpu usage of thread: " + threadInfo.toString().trim());
 
                 long percentCpu;
-                if (nanoAfter > nanoBefore)
-                    percentCpu = ((endCpuTime-startCpuTime)*100L)/
-                            (nanoAfter-nanoBefore);
-                else percentCpu = 0;
+                if (nanoAfter > nanoBefore) {
+                    percentCpu = ((endCpuTime - startCpuTime) * 100L) /
+                            (nanoAfter - nanoBefore);
+                } else {
+                    percentCpu = 0;
+                }
 
                 long percentUser;
-                if (nanoAfter > nanoBefore)
-                    percentUser = ((endUserTime-startUserTime)*100L)/
-                            (nanoAfter-nanoBefore);
-                else percentUser = 0;
+                if (nanoAfter > nanoBefore) {
+                    percentUser = ((endUserTime - startUserTime) * 100L) /
+                            (nanoAfter - nanoBefore);
+                } else {
+                    percentUser = 0;
+                }
 
-                logger.info("\t\ttotal cpu time: "+percentCpu+"%, user time: "+percentUser+"%");
+                long ioWaitPercent;
+                if (endCpuTime > startCpuTime) {
+                    ioWaitPercent = ((
+                            (endCpuTime - startCpuTime) -
+                                    (endUserTime - startUserTime)) * 100L)
+                            / (endCpuTime - startCpuTime);
+                } else {
+                    ioWaitPercent = 0;
+                }
+
+
+                logger.info("\t\ttotal cpu time: "+percentCpu+
+                        "%, user time: "+percentUser+
+                        "%, io wait: " + ioWaitPercent + "% in thread");
             }
         }
 
@@ -135,9 +159,10 @@ public class CpuTracer extends Tracer {
         for (long id : ids) {
             Times t = new Times();
             t.id = id;
-            t.threadInfo = bean.getThreadInfo(id);
-            t.startCpuTime = bean.getThreadCpuTime(id);
-            t.startUserTime = bean.getThreadUserTime(id);
+            t.nanoBefore = runtimeMXBean.getUptime();
+            t.threadInfo = threadMXBean.getThreadInfo(id);
+            t.startCpuTime = threadMXBean.getThreadCpuTime(id);
+            t.startUserTime = threadMXBean.getThreadUserTime(id);
             times.put(id, t);
         }
 
@@ -151,8 +176,9 @@ public class CpuTracer extends Tracer {
             if (t == null) {
                 continue;
             }
-            t.endCpuTime = bean.getThreadCpuTime(id);
-            t.endUserTime = bean.getThreadUserTime(id);
+            t.nanoAfter = runtimeMXBean.getUptime();
+            t.endCpuTime = threadMXBean.getThreadCpuTime(id);
+            t.endUserTime = threadMXBean.getThreadUserTime(id);
 
             t.printUsage(nanoBefore, nanoAfter, logger);
         }
@@ -161,7 +187,10 @@ public class CpuTracer extends Tracer {
 
     // for test
     public static void main(String[] args) throws IOException, InterruptedException {
-        new CpuTracer().run();
+        CpuTracer tracer = new CpuTracer();
+        // 初始化测试线程
+        tracer.initWorkThread();
+        tracer.run();
     }
 
 }

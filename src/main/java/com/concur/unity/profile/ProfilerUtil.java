@@ -15,7 +15,17 @@ import java.util.List;
  * @version $Id: Profiler.java 1291 2005-03-04 03:23:30Z baobao $
  */
 public final class ProfilerUtil {
-    private static final ThreadLocal entryStack = new ThreadLocal();
+
+    /**
+     * 是否启用性能统计--全局开关
+     */
+    private static boolean enable = false;
+
+    private static Entry nullEntry = new Entry(null, null, null);
+
+    private static final ThreadLocal entryStack = new ThreadLocal() {
+
+    };
 
     /**
      * 开始计时。
@@ -30,6 +40,9 @@ public final class ProfilerUtil {
      * @param message 第一个entry的信息
      */
     public static void start(String message) {
+        if (isCurrentThreadDisabled()) {
+            return;
+        }
         entryStack.set(new Entry(message, null, null));
     }
 
@@ -39,6 +52,9 @@ public final class ProfilerUtil {
      * @param message 第一个entry的信息
      */
     public static void start(Message message) {
+        if (isCurrentThreadDisabled()) {
+            return;
+        }
         entryStack.set(new Entry(message, null, null));
     }
 
@@ -59,7 +75,17 @@ public final class ProfilerUtil {
      * @param message 新entry的信息
      */
     public static void enter(String message) {
+//        if (isCurrentThreadDisabled()) {
+//            return;
+//        }
+        if (enable == false) {
+            return;
+        }
         Entry currentEntry = getCurrentEntry();
+        // equals isCurrentThreadDisabled(), just for get Entry by once
+        if (currentEntry == nullEntry) {
+            return;
+        }
 
         if (currentEntry != null) {
             currentEntry.enterSubEntry(message);
@@ -72,7 +98,17 @@ public final class ProfilerUtil {
      * @param message 新entry的信息
      */
     public static void enter(Message message) {
+//        if (isCurrentThreadDisabled()) {
+//            return;
+//        }
+        if (enable == false) {
+            return;
+        }
         Entry currentEntry = getCurrentEntry();
+        // equals isCurrentThreadDisabled(), just for get Entry by once
+        if (currentEntry == nullEntry) {
+            return;
+        }
 
         if (currentEntry != null) {
             currentEntry.enterSubEntry(message);
@@ -96,12 +132,15 @@ public final class ProfilerUtil {
      * @return 耗费的总时间，如果未开始计时，则返回<code>-1</code>
      */
     public static long getDuration() {
+        if (isCurrentThreadDisabled()) {
+            return -1L;
+        }
         Entry entry = (Entry) entryStack.get();
 
         if (entry != null) {
             return entry.getDuration();
         } else {
-            return -1;
+            return -1L;
         }
     }
 
@@ -111,6 +150,9 @@ public final class ProfilerUtil {
      * @return 列出所有entry，并统计各自所占用的时间
      */
     public static String dump() {
+        if (isCurrentThreadDisabled()) {
+            return "";
+        }
         return dump("", "");
     }
 
@@ -122,6 +164,9 @@ public final class ProfilerUtil {
      * @return 列出所有entry，并统计各自所占用的时间
      */
     public static String dump(String prefix) {
+        if (isCurrentThreadDisabled()) {
+            return "";
+        }
         return dump(prefix, prefix);
     }
 
@@ -134,6 +179,9 @@ public final class ProfilerUtil {
      * @return 列出所有entry，并统计各自所占用的时间
      */
     public static String dump(String prefix1, String prefix2) {
+        if (isCurrentThreadDisabled()) {
+            return "";
+        }
         Entry entry = (Entry) entryStack.get();
 
         if (entry != null) {
@@ -149,6 +197,9 @@ public final class ProfilerUtil {
      * @return 第一个entry，如果不存在，则返回<code>null</code>
      */
     public static Entry getEntry() {
+        if (isCurrentThreadDisabled()) {
+            return null;
+        }
         return (Entry) entryStack.get();
     }
 
@@ -169,6 +220,32 @@ public final class ProfilerUtil {
         }
 
         return entry;
+    }
+
+    /**
+     * 设置全局启用开关
+     * @param enable
+     */
+    public static void setEnable(boolean enable) {
+        ProfilerUtil.enable = enable;
+    }
+
+    /**
+     * 禁用当前线程的统计
+     */
+    public void disableCurrentThread() {
+        entryStack.set(nullEntry);
+    }
+
+    /**
+     * 当前线程是否被禁用统计
+     * @return
+     */
+    private static boolean isCurrentThreadDisabled() {
+        if (enable == false) {
+            return true;
+        }
+        return entryStack.get() == nullEntry;
     }
 
     /**

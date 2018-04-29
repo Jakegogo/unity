@@ -12,7 +12,7 @@ import java.lang.management.OperatingSystemMXBean;
 * @author: Viral Patel
 * @description: Prints JVM memory utilization statistics
 */
-public class MemoryTracer extends Tracer {
+public class MemoryTracer extends BaseTracer {
 
     private static final Logger logger = LoggerFactory.getLogger("MONITOR-MEMORY");
 

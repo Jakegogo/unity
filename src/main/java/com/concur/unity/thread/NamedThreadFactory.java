@@ -20,6 +20,7 @@ public class NamedThreadFactory implements ThreadFactory {
 		namePrefix = group.getName() + ":" + name;
 	}
 
+	@Override
 	public Thread newThread(Runnable r) {
 		return new Thread(group, r, namePrefix
 				+ threadNumber.getAndIncrement(), 0);
