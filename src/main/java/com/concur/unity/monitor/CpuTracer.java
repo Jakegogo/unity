@@ -19,6 +19,8 @@ import java.util.Map;
  */
 public class CpuTracer extends BaseTracer {
     private static final Logger logger = LoggerFactory.getLogger("MONITOR-CPU");
+    // 监控信息采集时间间隔,单位:毫秒
+    private long sleepTimes = 2000;
 
     @Override
     public void run() throws IOException, InterruptedException {
@@ -69,7 +71,7 @@ public class CpuTracer extends BaseTracer {
         long cpuBefore = osMBean.getProcessCpuTime();
 
         // Call an expensive task, or sleep if you are monitoring a remote process
-        sleep();
+        sleep(sleepTimes);
 
         long cpuAfter = osMBean.getProcessCpuTime();
         long nanoAfter = runtimeMXBean.getUptime();
@@ -166,7 +168,7 @@ public class CpuTracer extends BaseTracer {
             times.put(id, t);
         }
 
-        sleep();
+        sleep(sleepTimes);
         previousPrinter.join();
 
         logger.info("##### Every Threads CPU usage statistics in " + TRACE_INTERVAL/1000 + " seconds #####");
@@ -183,6 +185,19 @@ public class CpuTracer extends BaseTracer {
             t.printUsage(nanoBefore, nanoAfter, logger);
         }
 
+    }
+
+    /**
+     * 设置采集时间间隔
+     * @param sleepTimes 毫秒
+     * @return
+     */
+    public CpuTracer setSleepTimes(long sleepTimes) {
+        if (sleepTimes <= 0) {
+            return this;
+        }
+        this.sleepTimes = sleepTimes;
+        return this;
     }
 
     // for test

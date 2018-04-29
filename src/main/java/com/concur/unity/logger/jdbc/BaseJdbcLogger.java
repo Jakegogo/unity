@@ -15,7 +15,7 @@
  */
 package com.concur.unity.logger.jdbc;
 
-import com.concur.unity.ArrayUtil;
+import com.concur.unity.utils.ArrayUtil;
 import org.slf4j.Logger;
 
 import java.sql.Array;

@@ -1,6 +1,6 @@
 package com.concur.unity.monitor;
 
-import com.concur.unity.StringUtils;
+import com.concur.unity.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

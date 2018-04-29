@@ -16,7 +16,7 @@
 package com.concur.unity.logger.jdbc;
 
 
-import com.concur.unity.ExceptionUtil;
+import com.concur.unity.utils.ExceptionUtil;
 import org.slf4j.Logger;
 
 import java.lang.reflect.InvocationHandler;

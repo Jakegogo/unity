@@ -1,7 +1,7 @@
 package com.concur.unity.profile;
 
 
-import com.concur.unity.StringUtils;
+import com.concur.unity.utils.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -73,6 +73,7 @@ public final class ProfilerUtil {
      * 开始一个新的entry，并计时。
      *
      * @param message 新entry的信息
+     * @see {@link ProfilerUtil.release()}
      */
     public static void enter(String message) {
 //        if (isCurrentThreadDisabled()) {
@@ -96,6 +97,7 @@ public final class ProfilerUtil {
      * 开始一个新的entry，并计时。
      *
      * @param message 新entry的信息
+     * @see {@link ProfilerUtil.release()}
      */
     public static void enter(Message message) {
 //        if (isCurrentThreadDisabled()) {
@@ -142,6 +144,18 @@ public final class ProfilerUtil {
         } else {
             return -1L;
         }
+    }
+
+    /**
+     * 结束性能统计:
+     * 并将统计数据缓存到内存
+     *
+     */
+    public static void end() {
+        if (isCurrentThreadDisabled()) {
+            return;
+        }
+        reset();
     }
 
     /**

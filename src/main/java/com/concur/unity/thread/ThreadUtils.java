@@ -3,7 +3,7 @@
  */
 package com.concur.unity.thread;
 
-import com.concur.unity.JsonUtils;
+import com.concur.unity.utils.JsonUtils;
 import com.concur.unity.reflect.ReflectionUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

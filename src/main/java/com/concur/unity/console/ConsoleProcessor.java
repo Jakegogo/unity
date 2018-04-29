@@ -3,11 +3,11 @@
  */
 package com.concur.unity.console;
 
-import com.concur.unity.conversion.ConverterService;
+import com.concur.unity.utils.ConvertUtils;
+import com.concur.unity.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -38,9 +38,6 @@ public class ConsoleProcessor implements BeanPostProcessor, ApplicationListener<
 
 	private final static Object mutex = new Object();
 	
-	@Autowired
-	private ConverterService converterService;
-
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName)throws BeansException {
 		return bean;
@@ -121,6 +118,9 @@ public class ConsoleProcessor implements BeanPostProcessor, ApplicationListener<
 							String line = reader.readLine();
 							String[] array = line.split(" +");
 							String name = array[0];
+							if (StringUtils.isBlank(name)) {
+								continue;
+							}
 
 							MethodInvoker methodInvoker = method_map.get(name);
 							if (methodInvoker == null) {
@@ -133,7 +133,7 @@ public class ConsoleProcessor implements BeanPostProcessor, ApplicationListener<
 							if (array.length > 1) {
 								args = new Object[array.length - 1];
 								for (int i = 1; i < array.length; i++) {
-									Object arg = converterService.convert(array[i], method.getParameterTypes()[i - 1]);
+									Object arg = ConvertUtils.convert(array[i], method.getParameterTypes()[i - 1]);
 									args[i - 1] = arg;
 								}
 							}

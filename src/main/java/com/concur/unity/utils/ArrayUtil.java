@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package com.concur.unity;
+package com.concur.unity.utils;
 
 import java.util.Arrays;
 

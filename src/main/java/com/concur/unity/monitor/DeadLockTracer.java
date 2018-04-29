@@ -1,6 +1,6 @@
 package com.concur.unity.monitor;
 
-import com.concur.unity.JsonUtils;
+import com.concur.unity.utils.JsonUtils;
 import com.concur.unity.sequencelock.LockUtils;
 import com.concur.unity.thread.ThreadUtils;
 import org.slf4j.Logger;

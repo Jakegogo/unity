@@ -1,4 +1,4 @@
-package com.concur.unity;
+package com.concur.unity.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;

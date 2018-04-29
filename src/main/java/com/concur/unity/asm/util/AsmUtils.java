@@ -1,6 +1,6 @@
 package com.concur.unity.asm.util;
 
-import com.concur.unity.StringUtils;
+import com.concur.unity.utils.StringUtils;
 import org.objectweb.asm.*;
 
 import java.io.FileNotFoundException;

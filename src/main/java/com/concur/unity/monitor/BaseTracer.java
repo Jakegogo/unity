@@ -1,6 +1,6 @@
 package com.concur.unity.monitor;
 
-import com.concur.unity.StringUtils;
+import com.concur.unity.utils.StringUtils;
 import com.concur.unity.sequencelock.LockUtils;
 import org.slf4j.Logger;
 
@@ -80,6 +80,12 @@ public abstract class BaseTracer {
     protected void sleep() throws InterruptedException {
       Thread.sleep(TRACE_INTERVAL);
     }
+
+    // 一次取值时间间隔
+    protected void sleep(long sleepSeconds) throws InterruptedException {
+        Thread.sleep(sleepSeconds);
+    }
+
 
     // for test
     protected void testSort() {
