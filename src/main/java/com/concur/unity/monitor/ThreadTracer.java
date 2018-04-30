@@ -58,7 +58,7 @@ public class ThreadTracer extends BaseTracer {
                         threadInfo.getWaitedCount()));
                 logger.warn(String.format("WaitedTime   %13s", "  " +
                         threadInfo.getWaitedTime()));
-                logger.warn("stack:\r\n" + detail);
+                logger.warn("stack:\r\n" + detail + "\r\n");
             }
         }
     }

@@ -188,6 +188,9 @@ public abstract class ThreadUtils {
 		for (StackTraceElement element : stack) {
 			output.append("\t").append(element).append("\n");
 		}
+		if (stack.length > 0) {
+            output.delete(output.length() - 1, output.length());
+        }
 	}
 
 	/**
