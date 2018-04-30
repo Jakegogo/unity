@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
@@ -186,4 +188,33 @@ public abstract class ThreadUtils {
 		}
 	}
 
+	/**
+	 * 获取所有的线程
+     * @return
+	 */
+    public static Map<Long, Thread> getAllThreads() {
+        Thread[] threads = null;
+        try {
+            Method m = Thread.class.getDeclaredMethod("getThreads");
+			//if security settings allow this
+            m.setAccessible(true);
+			//use null if the method is static
+            threads = (Thread[]) m.invoke(null);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        if (threads == null) {
+            return null;
+        }
+
+        Map<Long, Thread> tMap = new HashMap<Long, Thread>(threads.length);
+        for (Thread t : threads) {
+            tMap.put(t.getId(), t);
+        }
+        return tMap;
+    }
 }

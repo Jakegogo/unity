@@ -1,7 +1,7 @@
 package com.concur.unity.monitor;
 
-import com.concur.unity.utils.StringUtils;
 import com.concur.unity.sequencelock.LockUtils;
+import com.concur.unity.utils.StringUtils;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -66,6 +66,9 @@ public abstract class BaseTracer {
             } // if
         }
     }
+
+
+    // --------------------------以下是测试内容-----------------------------
 
     protected void initWorkThread() {
         new Thread("测试排序线程") {
@@ -202,5 +205,6 @@ public abstract class BaseTracer {
             TimeUnit.MILLISECONDS.sleep(100);
         } catch (InterruptedException ignore) {}
     }
+
 
 }

@@ -2,6 +2,7 @@ package com.concur.unity.monitor;
 
 import com.concur.unity.console.ConsoleLevel;
 import com.concur.unity.console.ConsoleMethod;
+import com.concur.unity.console.ConsoleParam;
 import com.concur.unity.profile.Profileable;
 import com.concur.unity.profile.ProfilerUtil;
 import org.springframework.stereotype.Component;
@@ -35,7 +36,7 @@ public class Monitor implements Profileable {
      * 输出Cpu监控日志
      */
     @ConsoleMethod(name="cpu", description = "输出Cpu监控日志", level = ConsoleLevel.SYSTEM_LEVEL)
-    public void monitorCpu(long interval) {
+    public void monitorCpu(@ConsoleParam(name = "采集时间间隔 单位=毫秒", defaultValue = "2000") long interval) {
         try {
             new CpuTracer().setSleepTimes(interval).run();
         } catch (IOException e) {

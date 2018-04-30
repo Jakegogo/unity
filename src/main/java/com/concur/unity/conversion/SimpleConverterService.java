@@ -30,10 +30,7 @@ public class SimpleConverterService implements ConverterService {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public <T> T convert(Object source, Class<T> targetType, Object...objects) {
-	    if (source == null) {
-	        return null;
-        }
-	    if (source.getClass().equals(targetType) || targetType == Object.class) {
+	    if (source != null && source.getClass().equals(targetType) || targetType == Object.class) {
 	        return (T) source;
         }
 
@@ -59,11 +56,8 @@ public class SimpleConverterService implements ConverterService {
 
     @Override
     public <T> T convert(Object source, Type targetType, Object... objects) {
-	    if (source == null) {
-	        return null;
-        }
         Class<?> targetClass =  TypeUtils.getRawClass(targetType);
-        if (source.getClass().equals(targetClass) || targetClass == Object.class) {
+        if (source != null && source.getClass().equals(targetClass) || targetClass == Object.class) {
             return (T) source;
         }
 
@@ -130,7 +124,8 @@ public class SimpleConverterService implements ConverterService {
      * @return
      */
 	private ConverterCacheKey buildConverterCacheKey(Object source, Class<?> targetClazz){
-		return new ConverterCacheKey(source.getClass(), targetClazz);
+		Class<?> sourceClass = source != null ? source.getClass() : null;
+		return new ConverterCacheKey(sourceClass, targetClazz);
 	}
 
     /**
@@ -157,22 +152,23 @@ public class SimpleConverterService implements ConverterService {
 			this.targetType = targetType;
 		}
 
-		@Override
-		public boolean equals(Object other) {
-			if (this == other) {
-				return true;
-			}
-			if (!(other instanceof ConverterCacheKey)) {
-				return false;
-			}
-			ConverterCacheKey otherKey = (ConverterCacheKey) other;
-			return this.sourceType.equals(otherKey.sourceType) && this.targetType.equals(otherKey.targetType);
-		}
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            ConverterCacheKey that = (ConverterCacheKey) o;
+
+            if (sourceType != null ? !sourceType.equals(that.sourceType) : that.sourceType != null) return false;
+            return targetType != null ? targetType.equals(that.targetType) : that.targetType == null;
+        }
 
         @Override
-		public int hashCode() {
-			return this.sourceType.hashCode() * 29 + this.targetType.hashCode();
-		}
+        public int hashCode() {
+            int result = sourceType != null ? sourceType.hashCode() : 0;
+            result = 31 * result + (targetType != null ? targetType.hashCode() : 0);
+            return result;
+        }
 
         @Override
 		public String toString() {

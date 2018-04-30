@@ -10,9 +10,6 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -27,7 +24,7 @@ public class DeadLockTracer extends BaseTracer {
     public void run() throws IOException, InterruptedException {
         logger.info("##### dead lock statistics #####");
 
-        Map<Long, Thread> threads = getAllThreads();
+        Map<Long, Thread> threads = ThreadUtils.getAllThreads();
         if (threads == null) {
             return;
         }
@@ -64,30 +61,6 @@ public class DeadLockTracer extends BaseTracer {
 
         }
 
-    }
-
-    private Map<Long, Thread> getAllThreads() {
-        Thread[] threads = null;
-        try {
-            Method m = Thread.class.getDeclaredMethod("getThreads");
-            m.setAccessible(true); //if security settings allow this
-            threads = (Thread[]) m.invoke(null); //use null if the method is static
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        if (threads == null) {
-            return null;
-        }
-
-        Map<Long, Thread> tMap = new HashMap<Long, Thread>(threads.length);
-        for (Thread t : threads) {
-            tMap.put(t.getId(), t);
-        }
-        return tMap;
     }
 
     // for test
