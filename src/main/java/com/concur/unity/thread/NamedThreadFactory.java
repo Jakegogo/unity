@@ -26,4 +26,7 @@ public class NamedThreadFactory implements ThreadFactory {
 				+ threadNumber.getAndIncrement(), 0);
 	}
 
+	public String getNamePrefix() {
+		return namePrefix;
+	}
 }
