@@ -24,30 +24,40 @@ import java.util.concurrent.*;
 public abstract class ThreadUtils {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ThreadUtils.class);
-	
+
+    /**
+     * 关闭线程池
+     * @param threadPool 需要关闭的线程池
+     * @param shutdownNow true-立即关闭放弃当前执行的任务  false-等待所提交的任务都完成后再最初
+     */
+    public static void shundownThreadPool(ExecutorService threadPool, boolean shutdownNow){
+        shundownThreadPool(threadPool, shutdownNow, 30);
+    }
 	/**
 	 * 关闭线程池
 	 * @param threadPool 需要关闭的线程池
 	 * @param shutdownNow true-立即关闭放弃当前执行的任务  false-等待所提交的任务都完成后再最初
+     * @param waitSeconds 等待时长, 单位:秒
 	 */
-	public static void shundownThreadPool(ExecutorService threadPool, boolean shutdownNow){
+	public static void shundownThreadPool(ExecutorService threadPool, boolean shutdownNow, int waitSeconds){
 		if(shutdownNow){
 			try {
+                logger.error("正在关闭线程池:" + threadPool);
 				threadPool.shutdownNow();
 			}catch (Exception e) {
 				if(!(e instanceof InterruptedException)){
-					logger.error("关闭线程池时出错!", e);
+					logger.error("关闭线程池时出错" + threadPool, e);
 				}
 			}
 		} else {
 			threadPool.shutdown();
 			boolean taskComplete = false;
-			for(int i = 0; i < 30; i++){//最多等待30秒
+			for(int i = 0; i < 30; i++){//最多等待30次
 				
-				logger.error("正在第 [{}] 次尝试关闭线程池!", i+1);
+				logger.error("正在第 [{}] 次尝试关闭线程池:" + threadPool, i+1);
 				
 				try {
-					taskComplete = threadPool.awaitTermination(1, TimeUnit.SECONDS);
+					taskComplete = threadPool.awaitTermination(waitSeconds > 30 ? waitSeconds/30: 1, TimeUnit.SECONDS);
 				} catch (InterruptedException e) {
 					if(!taskComplete){
 						continue;
@@ -60,7 +70,7 @@ public abstract class ThreadUtils {
 					if(threadPool instanceof ThreadPoolExecutor){
 						Queue<?> taskQueue = ((ThreadPoolExecutor)threadPool).getQueue();
 						if(taskQueue != null){
-							logger.error("当前正在关闭的线程池尚有 [{}] 个任务排队等待处理!", taskQueue.size());
+							logger.error("当前正在关闭的线程池尚有 [{}] 个任务排队等待处理:" + threadPool, taskQueue.size());
 						}
 					}
 					
@@ -68,9 +78,9 @@ public abstract class ThreadUtils {
 			}
 			
 			if(!taskComplete){
-				logger.error("线程池非正常退出!");
+				logger.error("线程池非正常退出:" + threadPool);
 			} else {
-				logger.error("线程池正常退出!");
+				logger.error("线程池正常退出:" + threadPool);
 			}
 		}
 	}
@@ -84,7 +94,7 @@ public abstract class ThreadUtils {
 	public static String dumpThreadPool(String poolname , ThreadPoolExecutor threadPoolExecutor){
 
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("线程池名称" , poolname);
+		map.put("线程池名称" , poolname + threadPoolExecutor);
 
 		map.put("当前队列上排队的任务数量", "(无法获取)");
 		BlockingQueue<?> queue = threadPoolExecutor.getQueue();
@@ -111,7 +121,7 @@ public abstract class ThreadUtils {
 	public static String dumpThreadPool(String poolname , Executor executor){
 		
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("线程池名称" , poolname);
+		map.put("线程池名称" , poolname + executor);
 
 		map.put("当前队列上排队的任务数量", "(无法获取)");
 		BlockingQueue<?> queue = getTaskQueue(executor);
