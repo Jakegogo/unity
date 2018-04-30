@@ -1,4 +1,4 @@
-package com.concur.unity.monitor;
+package com.concur.unity.monitor.tracer;
 
 import com.concur.unity.sequencelock.LockUtils;
 import com.concur.unity.utils.StringUtils;
@@ -93,15 +93,15 @@ public abstract class BaseTracer {
     // for test
     protected void testSort() {
         List<Integer> list = new ArrayList<Integer>();
-        try {
+//        try {
             for (int i = 0; i < 1000000; i++) {
                 list.add(new Random().nextInt(10000));
-                Thread.sleep(1);
+//                Thread.sleep(1);
                 Collections.sort(list);
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     // for test

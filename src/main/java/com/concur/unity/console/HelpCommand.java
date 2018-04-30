@@ -52,6 +52,9 @@ public class HelpCommand {
 
             boolean hasParam = false;
             if(method.getParameterTypes()!= null){
+                if (methodInvoker.getParamInfos().size() > 1) {
+                    builder.append("\r\n");
+                }
                 for(ParamInfo paramInfo : methodInvoker.getParamInfos()){
                     builder.append(paramInfo.getName()).append(":")
                             .append(paramInfo.getParamType().getSimpleName());

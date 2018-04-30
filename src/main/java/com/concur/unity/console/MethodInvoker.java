@@ -39,8 +39,8 @@ public class MethodInvoker {
 
 				Annotation[] paramAnnotation = paramAnnotations[i];
 				if (paramAnnotation != null && paramAnnotation.length > 0) {
-					if (paramAnnotation[i] instanceof ConsoleParam) {
-						ConsoleParam consoleParam = (ConsoleParam) paramAnnotation[i];
+					if (paramAnnotation[0] instanceof ConsoleParam) {
+						ConsoleParam consoleParam = (ConsoleParam) paramAnnotation[0];
 						paramName = consoleParam.name();
 						defaultValue = consoleParam.defaultValue();
 						paramType = paramTypes[i];

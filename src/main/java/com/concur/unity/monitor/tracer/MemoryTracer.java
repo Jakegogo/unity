@@ -1,4 +1,4 @@
-package com.concur.unity.monitor;
+package com.concur.unity.monitor.tracer;
 
 import com.concur.unity.utils.StringUtils;
 import org.slf4j.Logger;
@@ -44,6 +44,12 @@ public class MemoryTracer extends BaseTracer {
         OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
 
         printAll(operatingSystemMXBean, logger);
+
+
+        // 分代内存分析
+        MemoryReporter mReporter = new MemoryReporter();
+        mReporter.init();
+        logger.warn(mReporter.getMemoryReport());
 
     }
 

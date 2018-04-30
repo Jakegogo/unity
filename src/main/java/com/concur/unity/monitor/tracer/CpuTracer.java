@@ -1,5 +1,6 @@
-package com.concur.unity.monitor;
+package com.concur.unity.monitor.tracer;
 
+import com.concur.unity.utils.StringUtils;
 import com.sun.management.OperatingSystemMXBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,8 +11,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * CPU监控输出
@@ -21,6 +21,8 @@ public class CpuTracer extends BaseTracer {
     private static final Logger logger = LoggerFactory.getLogger("MONITOR-CPU");
     // 监控信息采集时间间隔,单位:毫秒
     private long sleepTimes = 2000;
+    // 排序方式, 默认cpu占比
+    private String order;
 
     @Override
     public void run(Object... args) throws IOException, InterruptedException {
@@ -112,32 +114,45 @@ public class CpuTracer extends BaseTracer {
             public long nanoAfter;
             public ThreadInfo threadInfo;
 
+            //统计结果
+            long percentCpu;
+            long percentUser;
+            long ioWaitPercent;
+
+
             /**
              * 输出百分比
-             * @param nanoBefore
-             * @param nanoAfter
              * @param logger
              */
-            public void printUsage(long nanoBefore, long nanoAfter, Logger logger) {
+            public void printUsage(Logger logger) {
                 logger.warn("cpu usage of thread: " + threadInfo.toString().trim());
+                logger.warn("\t\ttotal cpu time: "+percentCpu+
+                        "%, user time: "+percentUser+
+                        "%, io wait: " + ioWaitPercent + "% in thread");
+            }
 
-                long percentCpu;
+            /**
+             * 执行计算
+             */
+            public void caculate() {
+                long nanoBefore = this.nanoBefore;
+                long nanoAfter = this.nanoAfter;
+
                 if (nanoAfter > nanoBefore) {
-                    percentCpu = ((endCpuTime - startCpuTime) * 100L) /
-                            (nanoAfter - nanoBefore);
+                    percentCpu = (endCpuTime - startCpuTime) /
+                            ((nanoAfter - nanoBefore) * 10000);
                 } else {
                     percentCpu = 0;
                 }
 
-                long percentUser;
+
                 if (nanoAfter > nanoBefore) {
-                    percentUser = ((endUserTime - startUserTime) * 100L) /
-                            (nanoAfter - nanoBefore);
+                    percentUser = (endUserTime - startUserTime) /
+                            ((nanoAfter - nanoBefore) * 10000);
                 } else {
                     percentUser = 0;
                 }
 
-                long ioWaitPercent;
                 if (endCpuTime > startCpuTime) {
                     ioWaitPercent = ((
                             (endCpuTime - startCpuTime) -
@@ -146,18 +161,13 @@ public class CpuTracer extends BaseTracer {
                 } else {
                     ioWaitPercent = 0;
                 }
-
-
-                logger.warn("\t\ttotal cpu time: "+percentCpu+
-                        "%, user time: "+percentUser+
-                        "%, io wait: " + ioWaitPercent + "% in thread");
             }
         }
 
 
         Map<Long, Times> times = new HashMap<Long, Times>();
 
-        long nanoBefore = System.nanoTime();
+        // 第一次采集
         for (long id : ids) {
             Times t = new Times();
             t.id = id;
@@ -171,8 +181,9 @@ public class CpuTracer extends BaseTracer {
         sleep(sleepTimes);
         previousPrinter.join();
 
-        logger.warn("##### Every Threads CPU usage statistics in " + TRACE_INTERVAL/1000 + " seconds #####");
-        long nanoAfter = System.nanoTime();
+
+        // 第二次采集
+        List<Times> timeList = new ArrayList<Times>();
         for (long id : ids) {
             Times t = times.get(id);
             if (t == null) {
@@ -181,8 +192,28 @@ public class CpuTracer extends BaseTracer {
             t.nanoAfter = runtimeMXBean.getUptime();
             t.endCpuTime = threadMXBean.getThreadCpuTime(id);
             t.endUserTime = threadMXBean.getThreadUserTime(id);
+            // 执行计算
+            t.caculate();
+            timeList.add(t);
+        }
 
-            t.printUsage(nanoBefore, nanoAfter, logger);
+        // 排序
+        Collections.sort(timeList, new Comparator<Times>() {
+            @Override
+            public int compare(Times o1, Times o2) {
+                if ("cpu".equals(order)) {
+                    return (int) (o2.percentCpu - o1.percentCpu);
+                } else if ("io".equals(order)) {
+                    return (int) (o2.ioWaitPercent - o1.ioWaitPercent);
+                }
+                return (int) (o2.percentCpu - o1.percentCpu);
+            }
+        });
+
+        // 输出日志
+        logger.warn("##### Every Threads CPU usage statistics in " + TRACE_INTERVAL/1000 + " seconds #####");
+        for (Times time : timeList) {
+            time.printUsage(logger);
         }
 
     }
@@ -197,6 +228,14 @@ public class CpuTracer extends BaseTracer {
             return this;
         }
         this.sleepTimes = sleepTimes;
+        return this;
+    }
+
+    public CpuTracer setOrder(String order) {
+        if (StringUtils.isBlank(order)) {
+            return this;
+        }
+        this.order = order;
         return this;
     }
 

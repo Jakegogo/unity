@@ -1,4 +1,4 @@
-package com.concur.unity.monitor;
+package com.concur.unity.monitor.tracer;
 
 import com.concur.unity.console.ConsoleLevel;
 import com.concur.unity.console.ConsoleMethod;
@@ -15,7 +15,7 @@ import java.io.IOException;
  * Created by Jake on 3/20 0020.
  */
 @Component
-public class Monitor implements Profileable {
+public class TracerConsoleBean implements Profileable {
 
     /**
      * 输出内存监控日志
@@ -37,9 +37,10 @@ public class Monitor implements Profileable {
      * 输出Cpu监控日志
      */
     @ConsoleMethod(name="cpu", description = "输出Cpu监控日志", level = ConsoleLevel.SYSTEM_LEVEL)
-    public void monitorCpu(@ConsoleParam(name = "采集时间间隔 单位=毫秒", defaultValue = "2000") long interval) {
+    public void monitorCpu(@ConsoleParam(name = "采集时间间隔 单位=毫秒", defaultValue = "2000") long interval,
+                           @ConsoleParam(name = "排序方式", defaultValue = "cpu") String order) {
         try {
-            new CpuTracer().setSleepTimes(interval).run();
+            new CpuTracer().setSleepTimes(interval).setOrder(order).run();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -92,7 +93,7 @@ public class Monitor implements Profileable {
     public void monitorAll() {
         monitorMemory();
         monitorGC();
-        monitorCpu(1000L);
+        monitorCpu(1000L, "cpu");
         monitorLocks();
     }
 
