@@ -19,9 +19,9 @@ class MemoryReporter {
     public String getMemoryReport() {
         init();
         final StringBuilder sb = new StringBuilder(new StringBuilder());
-        sb.append(getMemoryPoolReport());
-        sb.append(getGarbageCollectionReport());
-        sb.append(getMemoryMXBeanReport());
+        sb.append(getMemoryPoolReport()).append("\r\n");
+        sb.append(getGarbageCollectionReport()).append("\r\n");
+        sb.append(getMemoryMXBeanReport()).append("\r\n");
         return (sb.toString());
     }
 
