@@ -54,9 +54,11 @@ public class HelpCommand {
             if(method.getParameterTypes()!= null){
                 for(ParamInfo paramInfo : methodInvoker.getParamInfos()){
                     builder.append(paramInfo.getName()).append(":")
-                            .append(paramInfo.getParamType().getSimpleName()).append(":")
-                            .append("defaultValue=").append(paramInfo.getDefaultValue()).append(", ")
-                            .append("\r\n");
+                            .append(paramInfo.getParamType().getSimpleName());
+                    if (StringUtils.isNotBlank(paramInfo.getDefaultValue())) {
+                        builder.append(":").append("defaultValue=").append(paramInfo.getDefaultValue());
+                    }
+                    builder.append(", ").append("\r\n");
                     hasParam = true;
                 }
             }
