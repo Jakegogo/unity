@@ -160,7 +160,7 @@ public abstract class ThreadUtils {
 		// 忽略当前线程的堆栈信息
 		if (!thread.equals(Thread.currentThread())) {
 			output.append(thread)
-                    .append(" id:").append(thread.getId())
+                    .append(" id=").append(thread.getId())
                     .append("\n");
 		}
 

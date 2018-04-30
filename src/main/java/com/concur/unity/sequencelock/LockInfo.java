@@ -1,7 +1,5 @@
 package com.concur.unity.sequencelock;
 
-import com.concur.unity.thread.ThreadUtils;
-
 import java.util.Collection;
 
 /**
@@ -47,16 +45,18 @@ public class LockInfo {
         this.waitThreadCount = waitThreadCount;
     }
 
-    public String getWaitThreads() {
+    public String[] getWaitThreads() {
         if (waitThreads == null) {
             return null;
         }
-        StringBuilder dump = new StringBuilder();
+        String[] threadInfos = new String[waitThreads.size()];
+        int i = 0;
         for (Thread thread : waitThreads) {
-            dump.append(ThreadUtils.dumpThread(thread))
-                    .append("\r\n");
+            StringBuilder dump = new StringBuilder();
+            dump.append(thread).append(" id=").append(thread.getId());
+            threadInfos[i++] = dump.toString();
         }
-        return dump.toString();
+        return threadInfos;
     }
 
     void setWaitThreads(Collection<Thread> waitThreads) {
@@ -64,7 +64,10 @@ public class LockInfo {
     }
 
     public String getOwnerThread() {
-        return ThreadUtils.dumpThread(ownerThread);
+        return new StringBuilder()
+                .append(ownerThread)
+                .append(" id=").append(ownerThread.getId())
+                .toString();
     }
 
     void setOwnerThread(Thread ownerThread) {

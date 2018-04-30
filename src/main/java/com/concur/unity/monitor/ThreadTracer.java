@@ -48,15 +48,15 @@ public class ThreadTracer extends BaseTracer {
 
 
             if (pass) {
-                logger.warn(String.format("ThreadName %32s",
+                logger.warn(String.format("ThreadName   %13s",
                         threadInfo.getThreadName()));
                 logger.warn(String.format("BlockedCount %13s", "  " +
                         threadInfo.getBlockedCount()));
-                logger.warn(String.format("BlockedTime %12s", "  " +
+                logger.warn(String.format("BlockedTime  %13s", "  " +
                         threadInfo.getBlockedTime()));
-                logger.warn(String.format("WaitedCount %12s", "  " +
+                logger.warn(String.format("WaitedCount  %13s", "  " +
                         threadInfo.getWaitedCount()));
-                logger.warn(String.format("WaitedTime %12s", "  " +
+                logger.warn(String.format("WaitedTime   %13s", "  " +
                         threadInfo.getWaitedTime()));
                 logger.warn("stack:\r\n" + detail);
             }
