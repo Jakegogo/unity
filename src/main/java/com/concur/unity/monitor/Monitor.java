@@ -5,6 +5,7 @@ import com.concur.unity.console.ConsoleMethod;
 import com.concur.unity.console.ConsoleParam;
 import com.concur.unity.profile.Profileable;
 import com.concur.unity.profile.ProfilerUtil;
+import com.concur.unity.utils.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -53,6 +54,30 @@ public class Monitor implements Profileable {
     public void monitorLocks() {
         try {
             new DeadLockTracer().run();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 输出死锁监控
+     */
+    @ConsoleMethod(name="thread", description = "输出线程信息", level = ConsoleLevel.SYSTEM_LEVEL)
+    public void monitorThreads(@ConsoleParam(name = "模糊过滤 按线程维度") String grep) {
+        try {
+            Object[] args;
+            if (StringUtils.isNotBlank(grep)) {
+                String[] greps = grep.split(" +");
+                args = new Object[greps.length];
+                for (int i = 0;i < args.length;i++) {
+                    args[i] = greps[i];
+                }
+            } else {
+                args = null;
+            }
+            new ThreadTracer().run(args);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

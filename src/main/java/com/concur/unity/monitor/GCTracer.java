@@ -15,12 +15,12 @@ public class GCTracer extends BaseTracer {
     private static final Logger logger = LoggerFactory.getLogger("MONITOR-GC");
 
     @Override
-    public void run() {
+    public void run(Object... args) {
 
-        logger.info("##### JVM Garbage Collector statistics #####");
+        logger.warn("##### JVM Garbage Collector statistics #####");
         for(GarbageCollectorMXBean gcMXBean :
                 ManagementFactory.getGarbageCollectorMXBeans()) {
-            logger.info("----- " + gcMXBean + " -----");
+            logger.warn("----- " + gcMXBean + " -----");
             printAll(gcMXBean, logger);
         }
 

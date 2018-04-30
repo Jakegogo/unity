@@ -23,7 +23,7 @@ public class CpuTracer extends BaseTracer {
     private long sleepTimes = 2000;
 
     @Override
-    public void run() throws IOException, InterruptedException {
+    public void run(Object... args) throws IOException, InterruptedException {
         final Thread systemUsagePrinter = new Thread(){
             @Override
             public void run() {
@@ -82,9 +82,9 @@ public class CpuTracer extends BaseTracer {
                     ((nanoAfter-nanoBefore) * 10000);
         else percent = 0;
 
-        logger.info("##### CPU usage statistics in " +
+        logger.warn("##### CPU usage statistics in " +
                 TRACE_INTERVAL/1000 + " seconds #####");
-        logger.info("Cpu usage: "+percent+"%");
+        logger.warn("Cpu usage: "+percent+"%");
     }
 
 
@@ -119,7 +119,7 @@ public class CpuTracer extends BaseTracer {
              * @param logger
              */
             public void printUsage(long nanoBefore, long nanoAfter, Logger logger) {
-                logger.info("cpu usage of thread: " + threadInfo.toString().trim());
+                logger.warn("cpu usage of thread: " + threadInfo.toString().trim());
 
                 long percentCpu;
                 if (nanoAfter > nanoBefore) {
@@ -148,7 +148,7 @@ public class CpuTracer extends BaseTracer {
                 }
 
 
-                logger.info("\t\ttotal cpu time: "+percentCpu+
+                logger.warn("\t\ttotal cpu time: "+percentCpu+
                         "%, user time: "+percentUser+
                         "%, io wait: " + ioWaitPercent + "% in thread");
             }
@@ -171,7 +171,7 @@ public class CpuTracer extends BaseTracer {
         sleep(sleepTimes);
         previousPrinter.join();
 
-        logger.info("##### Every Threads CPU usage statistics in " + TRACE_INTERVAL/1000 + " seconds #####");
+        logger.warn("##### Every Threads CPU usage statistics in " + TRACE_INTERVAL/1000 + " seconds #####");
         long nanoAfter = System.nanoTime();
         for (long id : ids) {
             Times t = times.get(id);

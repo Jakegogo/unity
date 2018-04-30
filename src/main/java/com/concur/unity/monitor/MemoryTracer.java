@@ -17,29 +17,29 @@ public class MemoryTracer extends BaseTracer {
     private static final Logger logger = LoggerFactory.getLogger("MONITOR-MEMORY");
 
     @Override
-    public void run() {
+    public void run(Object... args) {
          
         //Getting the runtime reference from system
         Runtime runtime = Runtime.getRuntime();
 
-        logger.info("##### JVM Heap utilization statistics #####");
+        logger.warn("##### JVM Heap utilization statistics #####");
          
         //Print used memory
-        logger.info("Used Memory:"
+        logger.warn("Used Memory:"
             + StringUtils.formatFileSize(runtime.totalMemory() - runtime.freeMemory(), false));
  
         //Print free memory
-        logger.info("Free Memory:"
+        logger.warn("Free Memory:"
             + StringUtils.formatFileSize(runtime.freeMemory(), false));
          
         //Print total available memory
-        logger.info("Total Memory:" + StringUtils.formatFileSize(runtime.totalMemory(), false));
+        logger.warn("Total Memory:" + StringUtils.formatFileSize(runtime.totalMemory(), false));
  
         //Print Maximum available memory
-        logger.info("Max Memory:" + StringUtils.formatFileSize(runtime.maxMemory(), false));
+        logger.warn("Max Memory:" + StringUtils.formatFileSize(runtime.maxMemory(), false));
 
 
-        logger.info("##### System utilization statistics #####");
+        logger.warn("##### System utilization statistics #####");
 
         OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
 

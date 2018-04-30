@@ -90,11 +90,11 @@ public class LockUtils {
 	}
 
 	/**
-	 * 获取锁住的对象
+	 * 获取锁住的对象信息
 	 * @param identityHashCode hashCode
 	 * @return
 	 */
-	public static Object getLockObject(int identityHashCode) {
+	public static LockInfo getLockObject(int identityHashCode) {
 		return holder.getLockObject(identityHashCode);
 	}
 

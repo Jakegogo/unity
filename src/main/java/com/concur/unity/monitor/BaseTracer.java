@@ -37,7 +37,7 @@ public abstract class BaseTracer {
     /**
      * 此方法用于实现控制输出内容
      */
-    public abstract void run() throws IOException, InterruptedException;
+    public abstract void run(Object... args) throws IOException, InterruptedException;
 
     /**
      * 输出mBean的可用数据
@@ -58,10 +58,10 @@ public abstract class BaseTracer {
                 } // try
                 if (method.getName().endsWith("Size") &&
                         value instanceof Number) {
-                    logger.info(method.getName().substring(3) + ": " +
+                    logger.warn(method.getName().substring(3) + ": " +
                             StringUtils.formatFileSize(Long.valueOf(value.toString()), false));
                 } else {
-                    logger.info(method.getName().substring(3) + ": " + value);
+                    logger.warn(method.getName().substring(3) + ": " + value);
                 }
             } // if
         }

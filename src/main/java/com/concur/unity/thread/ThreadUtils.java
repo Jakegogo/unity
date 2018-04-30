@@ -159,7 +159,9 @@ public abstract class ThreadUtils {
 		StringBuilder output = new StringBuilder(1000);
 		// 忽略当前线程的堆栈信息
 		if (!thread.equals(Thread.currentThread())) {
-			output.append(thread).append("\n");
+			output.append(thread)
+                    .append(" id:").append(thread.getId())
+                    .append("\n");
 		}
 
 		appendThreadStackTrace(output, thread.getStackTrace());

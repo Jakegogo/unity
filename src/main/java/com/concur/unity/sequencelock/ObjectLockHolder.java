@@ -94,14 +94,19 @@ class ObjectLockHolder {
 		}
 
 		/**
-		 * 获取锁住的对象
+		 * 获取锁住的对象信息
 		 * @param identityHashCode hashCode
 		 * @return
 		 */
-		public Object getLockObject(int identityHashCode) {
+		public LockInfo getLockObject(int identityHashCode) {
 			for (ObjectLock lock : locks.values()) {
 				if (System.identityHashCode(lock.getSync()) == identityHashCode) {
-					return lock.getObject();
+					LockInfo lockInfo = new LockInfo();
+					lockInfo.setOwnerThread(lock.getOwner());
+					lockInfo.setWaitThreadCount(lock.getQueueLength());
+					lockInfo.setWaitThreads(lock.getQueuedThreads());
+					lockInfo.setTarget(lock.getObject());
+					return lockInfo;
 				}
 			}
 			return null;
@@ -176,12 +181,12 @@ class ObjectLockHolder {
 	}
 
 	/**
-	 * 获取锁住的对象
+	 * 获取锁住的对象信息
 	 * @param identityHashCode hashCode
 	 * @return
 	 */
-	public Object getLockObject(int identityHashCode) {
-		Object object;
+	public LockInfo getLockObject(int identityHashCode) {
+		LockInfo object;
 		for (Holder holder: holders.values()) {
 			object = holder.getLockObject(identityHashCode);
 			if (object != null) {
