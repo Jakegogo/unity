@@ -46,6 +46,8 @@ public class MemoryTracer extends BaseTracer {
         printAll(operatingSystemMXBean, logger);
 
 
+        logger.warn("##### JVM Heap generation detail statistics #####");
+
         // 分代内存分析
         MemoryReporter mReporter = new MemoryReporter();
         mReporter.init();
