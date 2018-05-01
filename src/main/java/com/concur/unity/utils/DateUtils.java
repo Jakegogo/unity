@@ -839,6 +839,14 @@ public class DateUtils {
 	}
 
 	/**
+	 * 获取当前时间字符串 格式yyyy-MM-dd HH:mm:ss
+	 * @return 格式yyyy-MM-dd HH:mm:ss
+	 */
+	public static String currentTimeStr() {
+		return format(new Date(), DATE_FORMAT);
+	}
+
+	/**
 	 * 日期按天迭代
 	 * @param startDate 开始日期
 	 * @param endDate 结束日期
