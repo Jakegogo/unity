@@ -28,6 +28,7 @@ public class CleanupThread extends Thread
 
     public CleanupThread()
     {
+        setName("ConcurrentLRUCache内存清理线程");
     }
 
     public CleanupThread(ConcurrentLRUCache c)
@@ -55,7 +56,7 @@ public class CleanupThread extends Thread
         while (!Thread.interrupted())
         {
         	ConcurrentLRUCache c;
-        	if (cleanQueue.peek() == null) {
+        	while (cleanQueue.peek() == null) {
 	            synchronized (this)
 	            {
 	                if (stop)
@@ -64,7 +65,7 @@ public class CleanupThread extends Thread
 	                }
 	                try
 	                {
-	                    this.wait();
+	                    this.wait(1000);
 	                }
 	                catch (InterruptedException e)
 	                {

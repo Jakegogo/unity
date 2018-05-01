@@ -99,6 +99,7 @@ public class MemoryNofity {
                                 }
                             }
                         };
+                        thread.setName("内存监控线程");
                         thread.start();
                         monitorThread = thread;
                     }
