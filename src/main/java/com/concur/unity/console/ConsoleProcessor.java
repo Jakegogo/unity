@@ -112,7 +112,9 @@ public class ConsoleProcessor implements BeanPostProcessor, ApplicationListener<
 					while(!Thread.currentThread().isInterrupted()) {
 						try {
 							Thread.sleep(1000);
-						} catch (InterruptedException e) {}
+						} catch (InterruptedException e) {
+							throw new RuntimeException(e);
+						}
 					}
 					try {
 						BufferedReader reader = currentReader.get();

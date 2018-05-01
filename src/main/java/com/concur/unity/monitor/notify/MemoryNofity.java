@@ -87,7 +87,7 @@ public class MemoryNofity {
                                     try {
                                         Thread.sleep(1500);
                                     } catch (InterruptedException e) {
-                                        e.printStackTrace();
+                                        throw new RuntimeException(e);
                                     }
                                     for (MemoryNofity notifier : notifiers) {
                                         try {

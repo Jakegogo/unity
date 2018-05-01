@@ -69,6 +69,7 @@ public class CleanupThread extends Thread
 	                }
 	                catch (InterruptedException e)
 	                {
+	                    throw new RuntimeException(e);
 	                }
 	            }
         	}
