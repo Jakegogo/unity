@@ -206,6 +206,7 @@ public abstract class AbstractEventBus implements EventBus, EventBusMBean {
 			}
 		} catch (InterruptedException e) {
 			logger.error("获取事件对象时出现异常", e);
+			throw new RuntimeException(e);
 		}
 	}
 
