@@ -113,7 +113,7 @@ public class ConsoleProcessor implements BeanPostProcessor, ApplicationListener<
 						try {
 							Thread.sleep(1000);
 						} catch (InterruptedException e) {
-							throw new RuntimeException(e);
+							break;
 						}
 					}
 					try {
@@ -124,6 +124,7 @@ public class ConsoleProcessor implements BeanPostProcessor, ApplicationListener<
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
+
 				}
 			}, "ConsoleProcessor的BufferedReader清理线程")
 					.start();
