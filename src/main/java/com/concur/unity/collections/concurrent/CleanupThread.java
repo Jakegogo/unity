@@ -53,7 +53,7 @@ public class CleanupThread extends Thread
     public void run()
     {
 
-        while (!Thread.interrupted())
+        while (!Thread.currentThread().isInterrupted())
         {
         	ConcurrentLRUCache c;
         	while (cleanQueue.peek() == null) {

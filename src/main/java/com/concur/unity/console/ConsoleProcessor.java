@@ -109,19 +109,18 @@ public class ConsoleProcessor implements BeanPostProcessor, ApplicationListener<
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					while(!Thread.interrupted()) {
+					while(!Thread.currentThread().isInterrupted()) {
 						try {
 							Thread.sleep(1000);
 						} catch (InterruptedException e) {}
-
-						try {
-							BufferedReader reader = currentReader.get();
-							if (reader != null) {
-								reader.close();
-							}
-						} catch (IOException e) {
-							e.printStackTrace();
+					}
+					try {
+						BufferedReader reader = currentReader.get();
+						if (reader != null) {
+							reader.close();
 						}
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
 				}
 			}, "ConsoleProcessor的BufferedReader清理线程")
