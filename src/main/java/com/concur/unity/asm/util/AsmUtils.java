@@ -599,7 +599,7 @@ public class AsmUtils implements Opcodes {
 	 */
 	public static <T> void writeClazz(String name, byte[] data) {
 //		try {
-//			File file = new File("C:\\" + name + ".class");
+//			File file = new File("/Users/michael/clazz/" + name + ".class");
 //			FileOutputStream fout = new FileOutputStream(file);
 //
 //			fout.write(data);

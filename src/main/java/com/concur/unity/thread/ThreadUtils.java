@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.concur.unity.thread;
 
 import com.concur.unity.utils.JsonUtils;
@@ -12,6 +9,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.*;
@@ -26,63 +24,64 @@ public abstract class ThreadUtils {
 	private static final Logger logger = LoggerFactory.getLogger(ThreadUtils.class);
 
     /**
-     * 关闭线程池
+     * 立即关闭线程池
      * @param threadPool 需要关闭的线程池
-     * @param shutdownNow true-立即关闭放弃当前执行的任务  false-等待所提交的任务都完成后再最初
+	 * @return List<Runnable> 未完成的任务
      */
-    public static void shundownThreadPool(ExecutorService threadPool, boolean shutdownNow){
-        shundownThreadPool(threadPool, shutdownNow, 30);
+    public static List<Runnable>  shundownThreadPool(ExecutorService threadPool){
+		try {
+			logger.error("正在关闭线程池:" + threadPool);
+			return threadPool.shutdownNow();
+		}catch (Exception e) {
+			if(!(e instanceof InterruptedException)){
+				logger.error("关闭线程池时出错" + threadPool, e);
+			}
+		}
+		return null;
     }
+
 	/**
 	 * 关闭线程池
 	 * @param threadPool 需要关闭的线程池
-	 * @param shutdownNow true-立即关闭放弃当前执行的任务  false-等待所提交的任务都完成后再最初
      * @param waitSeconds 等待时长, 单位:秒
+	 * @return Queue<Runnable> 未完成的任务
 	 */
-	public static void shundownThreadPool(ExecutorService threadPool, boolean shutdownNow, int waitSeconds){
-		if(shutdownNow){
+	public static Queue<Runnable> shundownThreadPool(ExecutorService threadPool, int waitSeconds){
+		// 提交关闭任务
+		threadPool.shutdown();
+		boolean taskComplete = false;
+		Queue<Runnable> taskQueue = null;
+		for(int i = 0; i < 30; i++) {//最多等待30次
+
+			logger.error("正在第 [{}] 次尝试关闭线程池:" + threadPool, i + 1);
+
 			try {
-                logger.error("正在关闭线程池:" + threadPool);
-				threadPool.shutdownNow();
-			}catch (Exception e) {
-				if(!(e instanceof InterruptedException)){
-					logger.error("关闭线程池时出错" + threadPool, e);
-				}
-			}
-		} else {
-			threadPool.shutdown();
-			boolean taskComplete = false;
-			for(int i = 0; i < 30; i++){//最多等待30次
-				
-				logger.error("正在第 [{}] 次尝试关闭线程池:" + threadPool, i+1);
-				
-				try {
-					taskComplete = threadPool.awaitTermination(waitSeconds > 30 ? waitSeconds/30: 1, TimeUnit.SECONDS);
-				} catch (InterruptedException e) {
-					if(!taskComplete){
-						continue;
-					}
-				}
-				
-				if(taskComplete){
-					break;
-				} else {
-					if(threadPool instanceof ThreadPoolExecutor){
-						Queue<?> taskQueue = ((ThreadPoolExecutor)threadPool).getQueue();
-						if(taskQueue != null){
-							logger.error("当前正在关闭的线程池尚有 [{}] 个任务排队等待处理:" + threadPool, taskQueue.size());
-						}
-					}
-					
+				taskComplete = threadPool.awaitTermination(waitSeconds > 30 ? waitSeconds / 30 : 1, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				if (!taskComplete) {
+					continue;
 				}
 			}
 
-			if(!taskComplete){
-				logger.error("线程池非正常退出:" + threadPool);
+			if (taskComplete) {
+				break;
 			} else {
-				logger.error("线程池正常退出:" + threadPool);
+				if (threadPool instanceof ThreadPoolExecutor) {
+					taskQueue = ((ThreadPoolExecutor) threadPool).getQueue();
+					if (taskQueue != null) {
+						logger.error("当前正在关闭的线程池尚有 [{}] 个任务排队等待处理:" + threadPool, taskQueue.size());
+					}
+				}
+
 			}
 		}
+
+		if(!taskComplete){
+			logger.error("线程池非正常退出:" + threadPool);
+		} else {
+			logger.error("线程池正常退出:" + threadPool);
+		}
+		return taskQueue;
 	}
 
 	/**
