@@ -533,11 +533,12 @@ public class AsmUtils implements Opcodes {
 
 		final Map<String, Class<?>> paramMap = new LinkedHashMap<String, Class<?>>(parameterTypes.length);
 
-		final String n = m.getDeclaringClass().getName();
 		ClassReader cr;
 
 		try {
-			cr = new ClassReader(n);
+			cr = new ClassReader(Thread.currentThread().getContextClassLoader()
+					.getResourceAsStream(
+							m.getDeclaringClass().getName().replace('.', '/') + ".class"));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

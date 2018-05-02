@@ -85,7 +85,9 @@ public class AsmAccessHelper implements Opcodes {
 		} catch (ClassNotFoundException classNotFoundException) {
 			ClassReader reader;
 			try {
-				reader = new ClassReader(AbstractFieldGetter.class.getName());
+				reader = new ClassReader(Thread.currentThread().getContextClassLoader()
+						.getResourceAsStream(
+								AbstractFieldGetter.class.getName().replace('.', '/') + ".class"));
 			} catch (IOException ioexception) {
 				throw new RuntimeException(ioexception);
 			}
@@ -223,7 +225,10 @@ public class AsmAccessHelper implements Opcodes {
 		} catch (ClassNotFoundException classNotFoundException) {
 			ClassReader reader;
 			try {
-				reader = new ClassReader(AbstractFieldSetter.class.getName());
+				reader = new ClassReader(
+						Thread.currentThread().getContextClassLoader()
+								.getResourceAsStream(
+										AbstractFieldSetter.class.getName().replace('.', '/') + ".class"));
 			} catch (IOException ioexception) {
 				throw new RuntimeException(ioexception);
 			}
@@ -371,7 +376,9 @@ public class AsmAccessHelper implements Opcodes {
 		ClassReader reader;
 		
 		try {
-			reader = new ClassReader(clazz.getName());
+			reader = new ClassReader(Thread.currentThread().getContextClassLoader()
+					.getResourceAsStream(
+							clazz.getName().replace('.', '/') + ".class"));
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new IllegalStateException(e);
@@ -428,7 +435,9 @@ public class AsmAccessHelper implements Opcodes {
 		ClassReader reader;
 
 		try {
-			reader = new ClassReader(clazz.getName());
+			reader = new ClassReader(Thread.currentThread().getContextClassLoader()
+					.getResourceAsStream(
+							clazz.getName().replace('.', '/') + ".class"));
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new IllegalStateException(e);
