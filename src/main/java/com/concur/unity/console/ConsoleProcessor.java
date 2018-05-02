@@ -73,6 +73,7 @@ public class ConsoleProcessor implements BeanPostProcessor, ApplicationListener<
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		final AtomicReference<BufferedReader> currentReader = new AtomicReference<BufferedReader>();
+		final AtomicReference<InputStreamReader> currentInputStreamReader = new AtomicReference<InputStreamReader>();
 
 		synchronized (mutex) {
 			if (worker != null) {
@@ -84,7 +85,9 @@ public class ConsoleProcessor implements BeanPostProcessor, ApplicationListener<
 				public void run() {
 					while (!Thread.currentThread().isInterrupted()) {
 						try {
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+							InputStreamReader inputStreamReader = new InputStreamReader(System.in);
+							currentInputStreamReader.set(inputStreamReader);
+                            BufferedReader reader = new BufferedReader(inputStreamReader);
 							currentReader.set(reader);
                             String line = reader.readLine();
                             if (line == null) {
@@ -115,6 +118,21 @@ public class ConsoleProcessor implements BeanPostProcessor, ApplicationListener<
 						} catch (InterruptedException e) {
 							break;
 						}
+					}
+
+					try {
+						System.in.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
+					try {
+						InputStreamReader inputStreamReader = currentInputStreamReader.get();
+						if (inputStreamReader != null) {
+							inputStreamReader.close();
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
 					try {
 						BufferedReader reader = currentReader.get();
