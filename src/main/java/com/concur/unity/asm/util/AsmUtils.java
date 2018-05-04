@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 类操作的工具集
@@ -523,13 +524,17 @@ public class AsmUtils implements Opcodes {
 	/**
 	 *
 	 * <p>
-	 * 获取方法的参数名
+	 * 获取方法的参数名,不获取Object的方法
 	 * </p>
 	 * 兼容JDK1.6
 	 * @param m
-	 * @return
+	 * @return Map<String, Class<?>> 正常获取返回Map或emptyMap, 无法获取返回null
 	 */
 	public static Map<String, Class<?>> getMethodParams(final Method m) {
+		// 不获取Object的方法
+		if(Object.class.equals(m.getDeclaringClass())) {
+			return null;
+		}
 		//获取参数类型列表
 		final Class<?>[] parameterTypes = m.getParameterTypes();
 
@@ -545,6 +550,7 @@ public class AsmUtils implements Opcodes {
 			throw new RuntimeException(e);
 		}
 
+		final AtomicReference<Boolean> couldVisit = new AtomicReference<Boolean>(false);
 		cr.accept(new ClassVisitor(Opcodes.ASM4) {
 
 			@Override
@@ -576,12 +582,17 @@ public class AsmUtils implements Opcodes {
 						}
 						super.visitLocalVariable(name, desc, signature, start,
 								end, index);
+						couldVisit.set(Boolean.TRUE);
 					}
 
 				};
 
 			}
 		}, 0);
+
+		if (couldVisit.get() == null || !couldVisit.get()) {
+			return null;
+		}
 
 		return paramMap;
 	}
@@ -590,13 +601,17 @@ public class AsmUtils implements Opcodes {
 	/**
 	 *
 	 * <p>
-	 * 获取方法的参数名列表
+	 * 获取方法的参数名列表,不获取Object的方法
 	 * </p>
 	 * 兼容JDK1.6
 	 * @param m Method
-	 * @return
+	 * @return List<String> 正常获取返回List或emptyList, 无法获取返回null
 	 */
 	public static List<String> getMethodParamNames(final Method m) {
+		// 不获取Object的方法
+		if(Object.class.equals(m.getDeclaringClass())) {
+			return null;
+		}
 		//获取参数类型列表
 		final Class<?>[] parameterTypes = m.getParameterTypes();
 
@@ -612,6 +627,7 @@ public class AsmUtils implements Opcodes {
 			throw new RuntimeException(e);
 		}
 
+		final AtomicReference<Boolean> couldVisit = new AtomicReference<Boolean>(false);
 		cr.accept(new ClassVisitor(Opcodes.ASM4) {
 
 			@Override
@@ -643,12 +659,21 @@ public class AsmUtils implements Opcodes {
 						}
 						super.visitLocalVariable(name, desc, signature, start,
 								end, index);
+						couldVisit.set(Boolean.TRUE);
 					}
 
+					@Override
+					public void visitParameter(String name, int access) {
+						list.add(name);
+					}
 				};
 
 			}
 		}, 0);
+
+		if (couldVisit.get() == null || !couldVisit.get()) {
+			return null;
+		}
 
 		return list;
 	}
