@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -584,6 +586,72 @@ public class AsmUtils implements Opcodes {
 		return paramMap;
 	}
 
+
+	/**
+	 *
+	 * <p>
+	 * 获取方法的参数名列表
+	 * </p>
+	 * 兼容JDK1.6
+	 * @param m Method
+	 * @return
+	 */
+	public static List<String> getMethodParamNames(final Method m) {
+		//获取参数类型列表
+		final Class<?>[] parameterTypes = m.getParameterTypes();
+
+		final List<String> list = new ArrayList<String>(parameterTypes.length);
+
+		ClassReader cr;
+
+		try {
+			cr = new ClassReader(Thread.currentThread().getContextClassLoader()
+					.getResourceAsStream(
+							m.getDeclaringClass().getName().replace('.', '/') + ".class"));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		cr.accept(new ClassVisitor(Opcodes.ASM4) {
+
+			@Override
+			public MethodVisitor visitMethod(final int access,
+											 final String name, final String desc,
+											 final String signature, final String[] exceptions) {
+				final Type[] args = Type.getArgumentTypes(desc);
+				// 方法名相同并且参数个数相同
+				if (!name.equals(m.getName())
+						|| !sameType(args, m.getParameterTypes())) {
+					return super.visitMethod(access, name, desc, signature,
+							exceptions);
+				}
+				MethodVisitor v = super.visitMethod(access, name, desc,
+						signature, exceptions);
+
+				return new MethodVisitor(Opcodes.ASM4, v) {
+					@Override
+					public void visitLocalVariable(String name, String desc,
+												   String signature, Label start, Label end, int index) {
+						int i = index - 1;
+						// 如果是静态方法，则第一就是参数
+						// 如果不是静态方法，则第一个是"this"，然后才是方法的参数
+						if (Modifier.isStatic(m.getModifiers())) {
+							i = index;
+						}
+						if (i >= 0 && i < parameterTypes.length) {
+							list.add(name);
+						}
+						super.visitLocalVariable(name, desc, signature, start,
+								end, index);
+					}
+
+				};
+
+			}
+		}, 0);
+
+		return list;
+	}
 
 
 	/**
