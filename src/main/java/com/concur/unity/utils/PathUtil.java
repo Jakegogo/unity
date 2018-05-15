@@ -3,6 +3,7 @@ package com.concur.unity.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -162,7 +163,7 @@ public class PathUtil {
 	 * @return
 	 */
 	public static String getCurrentRoot() {
-		String path = PathUtil.class.getClassLoader().getResource("").getPath();
+		String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
 		int index = path.indexOf("/WEB-INF");
 
 		if (index == -1) {
@@ -202,6 +203,13 @@ public class PathUtil {
 		}
 
 		return path;
+	}
+
+
+	public static String getCurrentWorkDirectory() {
+		File file = new File(".");
+		String path = file.getAbsolutePath();
+		return path.substring(0, path.length()-1);
 	}
 
 	/**
