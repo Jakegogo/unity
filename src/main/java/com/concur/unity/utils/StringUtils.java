@@ -1346,4 +1346,68 @@ public abstract class StringUtils {
 		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
 	}
 
+	public static String substringAfter(String str, String separator) {
+		if (isEmpty(str)) {
+			return str;
+		}
+		if (separator == null) {
+			return "";
+		}
+		int pos = str.indexOf(separator);
+		if (pos == -1) {
+			return "";
+		}
+		return str.substring(pos + separator.length());
+	}
+
+
+	public static String substringBefore(String str, String separator) {
+		if (isEmpty(str) || separator == null) {
+			return str;
+		}
+		if (separator.length() == 0) {
+			return "";
+		}
+		int pos = str.indexOf(separator);
+		if (pos == -1) {
+			return str;
+		}
+		return str.substring(0, pos);
+	}
+
+
+	public static String substringAfterLast(String str, String separator) {
+		if (isEmpty(str)) {
+			return str;
+		} else if (isEmpty(separator)) {
+			return "";
+		} else {
+			int pos = str.lastIndexOf(separator);
+			return pos != -1 && pos != str.length() - separator.length() ? str.substring(pos + separator.length()) : str;
+		}
+	}
+
+
+	public static String substringBeforeLast(String str, String separator) {
+		if (isEmpty(str) || isEmpty(separator)) {
+			return str;
+		}
+		int pos = str.lastIndexOf(separator);
+		if (pos == -1) {
+			return str;
+		}
+		return str.substring(0, pos);
+	}
+
+	public static String replaceFirstLetter(String str, String charater) {
+		if (isEmpty(str) || isEmpty(charater)) {
+			return str;
+		}
+		int pos = str.indexOf(charater);
+		if (pos == 0) {
+			return str.substring(0);
+		}
+		return str;
+	}
+
 }
