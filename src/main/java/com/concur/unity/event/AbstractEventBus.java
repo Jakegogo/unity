@@ -69,7 +69,7 @@ public abstract class AbstractEventBus implements EventBus, EventBusMBean {
 		// 注册MBean
 		try {
 			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-			ObjectName name = new ObjectName("com.jake.common,type=EventBusMBean,id=" + id);
+			ObjectName name = new ObjectName("com.jake.common:type=EventBusMBean,id=" + id);
 			mbs.registerMBean(this, name);
 		} catch (Exception e) {
 			logger.error("注册[common-event]的JMX管理接口失败", e);
