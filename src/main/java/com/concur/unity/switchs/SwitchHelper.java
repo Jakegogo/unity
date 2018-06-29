@@ -31,7 +31,7 @@ public class SwitchHelper {
     if (cls == null) {
       throw new IllegalArgumentException("开关类不能为空:cls");
     }
-    String currentDirectory = PathUtil.getCurrentDirectory();
+    String currentDirectory = PathUtil.getCurrentWorkDirectory();
     String filePath = currentDirectory + baseDir +
         cls.getSimpleName().toLowerCase() + ".properties";
     final Properties props = new Properties();
