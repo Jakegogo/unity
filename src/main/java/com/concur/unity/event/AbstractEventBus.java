@@ -66,14 +66,16 @@ public abstract class AbstractEventBus implements EventBus, EventBusMBean {
 		consumer.setDaemon(true);
 		consumer.start();
 
+		// @Deprecated
+		// spring 自动注册
 		// 注册MBean
-		try {
-			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-			ObjectName name = new ObjectName("com.jake.common:type=EventBusMBean,id=" + id);
-			mbs.registerMBean(this, name);
-		} catch (Exception e) {
-			logger.error("注册[common-event]的JMX管理接口失败", e);
-		}
+//		try {
+//			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+//			ObjectName name = new ObjectName("com.concur.unity:type=" + getClass().getSimpleName() + ",id=" + id);
+//			mbs.registerMBean(this, name);
+//		} catch (Exception e) {
+//			logger.error("注册[common-event]的JMX管理接口失败", e);
+//		}
 	}
 
 	/**
@@ -189,7 +191,13 @@ public abstract class AbstractEventBus implements EventBus, EventBusMBean {
 	 */
 	private void consumeEvent() {
 		try {
-			Event<?> event = getEventQueue().take();
+			BlockingQueue<Event<?>> eventQueue = getEventQueue();
+			while (eventQueue == null) {
+				Thread.sleep(500);
+				eventQueue = getEventQueue();
+			}
+
+			Event<?> event = eventQueue.take();
 			Object key = event.getKey();
 			if (!receivers.containsKey(key)) {
 				logger.warn("事件[{}]没有对应的接收器", key);

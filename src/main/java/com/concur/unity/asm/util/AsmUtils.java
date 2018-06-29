@@ -3,7 +3,9 @@ package com.concur.unity.asm.util;
 import com.concur.unity.utils.StringUtils;
 import org.objectweb.asm.*;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -692,15 +694,15 @@ public class AsmUtils implements Opcodes {
 	 * @throws IOException
 	 */
 	public static <T> void writeClazz(String name, byte[] data) {
-//		try {
-//			File file = new File("/Users/michael/clazz/" + name + ".class");
-//			FileOutputStream fout = new FileOutputStream(file);
-//
-//			fout.write(data);
-//			fout.close();
-//		} catch (Exception e) {
+		try {
+			File file = new File("./generated/" + name + ".class");
+			FileOutputStream fout = new FileOutputStream(file);
+
+			fout.write(data);
+			fout.close();
+		} catch (Exception e) {
 //			e.printStackTrace();
-//		}
+		}
 	}
 
 
