@@ -1,10 +1,12 @@
 package com.concur.unity.switchs;
 
 import com.concur.unity.utils.ConvertUtils;
+import com.concur.unity.utils.FieldUtil;
 import com.concur.unity.utils.PathUtil;
 import com.concur.unity.utils.ReflectionUtils;
 import com.concur.unity.utils.ReflectionUtils.FieldCallback;
 import com.concur.unity.utils.ReflectionUtils.FieldFilter;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -50,7 +52,12 @@ public class SwitchHelper {
       public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
         ReflectionUtils.makeAccessible(field);
         String strValue = props.getProperty(field.getName());
-        field.set(null, ConvertUtils.convert(strValue, field.getType()));
+        if (strValue == null) {
+          strValue = props.getProperty(FieldUtil.propertyName(field.getName()));
+        }
+        if (strValue != null || !field.getType().isPrimitive()) {
+          field.set(null, ConvertUtils.convert(strValue, field.getType()));
+        }
       }
     }, new FieldFilter() {
       @Override
