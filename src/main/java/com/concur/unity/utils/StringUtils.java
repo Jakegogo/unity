@@ -1346,6 +1346,12 @@ public abstract class StringUtils {
 		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
 	}
 
+	/**
+	 * 截取特定字符之后的字符串
+	 * @param str 目标字符串
+	 * @param separator 特定字符
+	 * @return
+	 */
 	public static String substringAfter(String str, String separator) {
 		if (isEmpty(str)) {
 			return str;
@@ -1361,6 +1367,12 @@ public abstract class StringUtils {
 	}
 
 
+	/**
+	 * 截取特定字符之前的字符串
+	 * @param str 目标字符串
+	 * @param separator 特定字符
+	 * @return
+	 */
 	public static String substringBefore(String str, String separator) {
 		if (isEmpty(str) || separator == null) {
 			return str;
@@ -1376,6 +1388,12 @@ public abstract class StringUtils {
 	}
 
 
+	/**
+	 * 截取最后一个特定字符之后的字符串
+	 * @param str 目标字符串
+	 * @param separator 特定字符
+	 * @return
+	 */
 	public static String substringAfterLast(String str, String separator) {
 		if (isEmpty(str)) {
 			return str;
@@ -1388,6 +1406,12 @@ public abstract class StringUtils {
 	}
 
 
+	/**
+	 * 截取最后一个特定字符之前的字符串
+	 * @param str 目标字符串
+	 * @param separator 特定字符
+	 * @return
+	 */
 	public static String substringBeforeLast(String str, String separator) {
 		if (isEmpty(str) || isEmpty(separator)) {
 			return str;
@@ -1399,6 +1423,12 @@ public abstract class StringUtils {
 		return str.substring(0, pos);
 	}
 
+	/**
+	 * 移除第一个字符, 如果第一个字符和指定的字符相等的话
+	 * @param str 目标字符串
+	 * @param charater 特定字符
+	 * @return
+	 */
 	public static String replaceFirstLetter(String str, String charater) {
 		if (isEmpty(str) || isEmpty(charater)) {
 			return str;
@@ -1408,6 +1438,24 @@ public abstract class StringUtils {
 			return str.substring(0);
 		}
 		return str;
+	}
+
+
+	/**
+	 * 字符串连接
+	 * @param delimiter 分隔符
+	 * @param elements 集合
+	 * @return
+	 */
+	public static String join(CharSequence delimiter,
+							  Iterable<? extends CharSequence> elements) {
+		Assert.notNull(delimiter);
+		Assert.notNull(elements);
+		StringJoiner joiner = new StringJoiner(delimiter);
+		for (CharSequence cs: elements) {
+			joiner.add(cs);
+		}
+		return joiner.toString();
 	}
 
 }

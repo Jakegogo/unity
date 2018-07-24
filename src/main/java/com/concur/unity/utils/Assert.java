@@ -129,10 +129,11 @@ public abstract class Assert {
      * @param message the exception message to use if the assertion fails
      * @throws IllegalArgumentException if the object is {@code null}
      */
-    public static void notNull(Object object, String message) {
+    public static <T> T notNull(T object, String message) {
         if (object == null) {
             throw new IllegalArgumentException(message);
         }
+        return object;
     }
 
     /**
